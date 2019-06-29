@@ -23,6 +23,12 @@ CMPERPX = 0.01188 # the number of cm in the actual bubble chamber corresponding
                   # to each pixel in a bubble chamber image scan
 ERRCMPERPX = 0.00090 # the error on the px to cm conversion
 
+# bubble chamber magnetic field
+MAGNETICFIELD = 15.5 # in kG
+
+# speed of light
+C = 0.3 # in giga metres per second
+
 # marker colours
 DEFAULTMARKERCOLOR = QtGui.QColor(176, 30, 125)
 STARTMARKERCOLOR = QtGui.QColor(0, 186, 186)
@@ -45,9 +51,3 @@ ZOOMOUTFACTOR = 1/ZOOMINFACTOR
 # default GUI state variables
 DEFAULTPOINTSIZE = 10
 DEFAULTLINEWIDTH = 2.5
-
-# bubble chamber magnetic field
-MAGNETICFIELD = 15.5 # in kG
-
-# speed of light
-C = 0.3 # in giga metres per second

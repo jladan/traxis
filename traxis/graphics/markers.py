@@ -20,7 +20,6 @@ from traxis import constants
 
 
 class MarkerList(QtWidgets.QListWidget):
-
     """Track Marker list class. Instantiate by optionally passing a parent
     widget. This class subclasses QListWidget and is intended to contain
     TrackMarker objects (as opposed to regular QListWidgetItem objects).
@@ -29,7 +28,6 @@ class MarkerList(QtWidgets.QListWidget):
     """
 
     def __init__(self, parent=None):
-
         super().__init__(parent)
 
     def addMarker(self, x, y, size, width, scene):
@@ -200,7 +198,6 @@ class MarkerList(QtWidgets.QListWidget):
             self.setCurrentRow(self.currentRow() - 1)
 
 class TrackMarker(QtWidgets.QListWidgetItem):
-
     """Track marker class. Instantiate by passing a markerId (an int), a unique
     identifier for the marker, x and y (floats), the coordinates of the marker,
     size (float), the size of the marker, width (float), the width of the
@@ -210,7 +207,6 @@ class TrackMarker(QtWidgets.QListWidgetItem):
     with methods for manipulating these attributes."""
 
     def __init__(self, markerId, x, y, size, width, parent=None):
-
         # the id attribute is a unique identifier for the marker. It is up to
         # the code that creates the marker to ensure it is passing a unique id.
         # The main purpose of the id is its use in creating a unique name for

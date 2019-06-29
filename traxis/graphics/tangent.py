@@ -20,7 +20,6 @@ from traxis import constants
 
 
 class TangentLine(QtWidgets.QGraphicsLineItem):
-
     """Tangent line class. This class subclasses QGraphicsLineItem, allowing
     an object to be instantiated with a pen width and a graphics scene to
     which it will be added in addition to a QLineF object. It also adds a

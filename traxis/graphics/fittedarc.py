@@ -20,7 +20,6 @@ from traxis import constants
 
 
 class ArcItem(QtWidgets.QGraphicsEllipseItem):
-    
     """This class is a QGraphicsEllipseItem with a custom paint method.
     Instead a drawing an ellipse or a pie, an ArcItem object draws an arc
     when added to a graphics scene. The start and span angles of the ArcItem
@@ -80,7 +79,6 @@ class ArcItem(QtWidgets.QGraphicsEllipseItem):
         return p
 
 class MomentumArc(object):
-
     """Momentum arc class. This class is a container for three ArcItem objects
     which together form the momentum arc. This class implements methods for
     manipulating the ArcItems it contains such that they function as a unit.

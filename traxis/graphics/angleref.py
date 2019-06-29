@@ -20,7 +20,6 @@ from traxis import constants
 
 
 class ReferenceLine(object):
-
     """Angle reference line class. This class is a container for two
     QGraphicsEllipseItem objects and one QGraphicsLineItem object
     which together form an angle reference. This class implements
