@@ -1,4 +1,6 @@
 # Copyright (C) 2014 Syed Haider Abidi, Nooruddin Ahmed and Christopher Dydula
+# Minor modification October 2017 by Saila Shama
+#	Fixed a bug in maingui.py where load session crashes the session
 #
 # This file is part of traxis.
 #
