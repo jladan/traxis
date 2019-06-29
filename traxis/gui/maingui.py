@@ -27,7 +27,6 @@ from traxis.graphics import tangent
 
 
 class MainWidget(skeleton.GuiSkeleton):
-
     """Class that extends the base skeleton widget class, implementing
     logic that connects button clicks and other widget events to their
     handlers. Defines the GUI's event handler methods.
@@ -432,19 +431,16 @@ class MainWidget(skeleton.GuiSkeleton):
     ##############################
     def zoomIn(self):
         """Scale the image by ZOOMINFACTOR."""
-
         self.scaleImage(constants.ZOOMINFACTOR)
 
     def zoomOut(self):
         """Scale the image by ZOOMOUTFACTOR."""
-
         self.scaleImage(constants.ZOOMOUTFACTOR)
 
     def scaleImage(self, factor):
         """Scale the graphics view and all graphics items drawn on it by
         factor.
         """
-
         # update the current zoom level
         self.zoomFactor = self.zoomFactor * factor
         

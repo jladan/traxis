@@ -87,7 +87,7 @@ def fitCircle(markerList):
     # makes the function return infodict, mesg and ier which are not used.
     # Decrease the desired error in the results by passing explicit values
     # for ftol and xtol (the default value is 1.49012e-8)
-    centerLsq, covMatrix, infodict, mesg, ier = optimize.leastsq(
+    centerLsq, covMatrix, _, _, _ = optimize.leastsq(
                                                     _distanceResiduals,
                                                     centerEstimate, 
                                                     args=(xArray, yArray), 
@@ -98,7 +98,7 @@ def fitCircle(markerList):
     # covariance matrix it returns: "This matrix must be multiplied by the
     # residual variance to get the covariance of the parameter estimates"
     # The 'residual variance' is just chi-squared/degrees of freedom
-    dof = len(yArray)-len(centerEstimate)
+    dof = len(yArray) - len(centerEstimate)
     chi2Dof = (_distanceResiduals(centerLsq, xArray, yArray)**2).sum()/dof
     # multiply covMatrix by the 'residual variance' to get the covariance
     # of the parameter estimates
