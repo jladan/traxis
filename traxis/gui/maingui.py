@@ -41,6 +41,7 @@ class MainWidget(skeleton.GuiSkeleton):
         super().__init__()
 
         # set default GUI state variables
+        self.msgNumber = 0
         self.zoomFactor = 1
         self.pointSize = constants.DEFAULTPOINTSIZE
         self.lineWidth = constants.DEFAULTLINEWIDTH
@@ -714,18 +715,6 @@ class MainWidget(skeleton.GuiSkeleton):
     def displayMessage(self, msg):
         """Write msg, a string, along with the message number to the console.
         """
-
-        # the text browser's document block count will be 1 if there are zero
-        # blocks or one block. Therefore, to check if the block count is zero,
-        # check the document's character count, which is 1 if there are zero
-        # blocks
-        if self.consoleTextBrowser.document().characterCount() == 1:
-            msgNumber = 1
-        # otherwise the message number is 1 more than the current block count
-        else:
-            msgNumber = self.consoleTextBrowser.document().blockCount() + 1
-
-        # prepend the message number to msg
-        msg = "[{}]  {}".format(msgNumber, msg)
-        # add the message to the console
+        self.msgNumber += 1
+        msg = "[{}]  {}".format(self.msgNumber, msg)
         self.consoleTextBrowser.append(msg)
