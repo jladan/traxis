@@ -96,7 +96,7 @@ class MarkerList(QtWidgets.QListWidget):
 
     def setStartPoint(self, marker):
         """Designate marker as the start point for this list of markers."""
-        
+
         # get the marker currently designated as the start point (if there is
         # one)
         oldStartPoint = self.getStartPoint()
@@ -111,7 +111,7 @@ class MarkerList(QtWidgets.QListWidget):
 
     def setEndPoint(self, marker):
         """Designate marker as the end point for this list of markers."""
-        
+
         # get the marker currently designated as the end point (if there is
         # one)
         oldEndPoint = self.getEndPoint()
@@ -129,7 +129,7 @@ class MarkerList(QtWidgets.QListWidget):
         list of markers or None if no marker has been designated as the start
         point.
         """
-        
+
         # loop over all the markers in this list and return the first one found
         # to have the designation 'start' (since there should only be one)
         for row in range(self.count()):
@@ -146,7 +146,7 @@ class MarkerList(QtWidgets.QListWidget):
         list of markers or None if no marker has been designated as the end
         point.
         """
-        
+
         # loop over all the markers in this list and return the first one found
         # to have the designation 'end' (since there should only be one)
         for row in range(self.count()):
@@ -164,7 +164,7 @@ class MarkerList(QtWidgets.QListWidget):
         markers to their appropriate non-highlighted colours (default colour,
         start colour, or end colour).
         """
-        
+
         # simply loop over all the markers in this list and call their recolor
         # method, which will appropriately recolor the marker based on its
         # designation or whether it is the currently selected marker.
@@ -198,35 +198,36 @@ class MarkerList(QtWidgets.QListWidget):
             self.setCurrentRow(self.currentRow() - 1)
 
 class TrackMarker(QtWidgets.QListWidgetItem):
-    """Track marker class. Instantiate by passing a markerId (an int), a unique
-    identifier for the marker, x and y (floats), the coordinates of the marker,
-    size (float), the size of the marker, width (float), the width of the
-    pen used to draw the marker, and optionally parent, a MarkerList object to
-    which the marker will be added. This class subclasses QListWidgetItem,
-    adding three attributes (id, designation and a QGraphicsEllipseItem) along
-    with methods for manipulating these attributes."""
+    """Track marker class.
+
+    This class subclasses QListWidgetItem, adding attributes for markers:
+       - id (unique),
+       - displayed name
+       - designation (start, end, selected, or none),
+       - coordinates
+       - QGraphicsEllipseItem
+    """
 
     def __init__(self, markerId, x, y, size, width, parent=None):
-        # the id attribute is a unique identifier for the marker. It is up to
-        # the code that creates the marker to ensure it is passing a unique id.
-        # The main purpose of the id is its use in creating a unique name for
-        # for the marker in the point list.
+        """ Create a new marker.
+
+        It is up to the caller to ensure the markerId is unique. This is
+        primarily used to create a displayed name.
+
+        Parameters:
+        markerId    : identifier for the marker,
+        x, y        : (float) x and y coordinates,
+        size        : (float) the size of the marker,
+        width       : (float) the width of the pen used to draw the marker,
+        parent      : (optional) MarkerList to which the marker will be added.
+        """
         self.id = markerId
+        self._x = x
+        self._y = y
 
-        # the designation attribute indicates whether the marker is a start
-        # point, an end point or neither. By default, a newly created marker
-        # is neither a start nor end point. Valid values for this attribute are
-        # 'start', 'end' or None. This attribute is to be set by calling the
-        # setDesignation() method, which takes care of changing the name of
-        # a point. It is up to the code that calls setDesignation() to ensure
-        # that there is only one start point and only one end point.
         self.designation = None
-
-        # create a unique name for the marker using its id
         markerName = "Point {}".format(self.id)
 
-        # call the __init__ method of the QListWidgetItem superclass, passing
-        # the point's name and the marker's parent widget.
         super().__init__(markerName, parent)
 
         # set a minimum rect size
@@ -237,23 +238,28 @@ class TrackMarker(QtWidgets.QListWidgetItem):
         if width < 1:
             width = 1
 
-        # create a rect for the marker's ellipse with the given coordinates
-        # and size (set the width and height of the rect to size)
-        ellipseRect = QtCore.QRectF(x, y, size, size)
-        # when instantiating a rect, the given coordinates are used for the
-        # top-left corner so we must explicitly move the rect's center to the
-        # desired coordinates
-        ellipseRect.moveCenter(QtCore.QPointF(x, y))
-        # create a QGraphicsEllipseItem using the rect created above. Set it
-        # as the marker's ellipse attribute.
-        self.ellipse = QtWidgets.QGraphicsEllipseItem(ellipseRect)
-
-        # create a pen for the ellipse using the base marker colour
+        # create the ellipse to be drawn as the marker
         ellipsePen = QtGui.QPen(constants.DEFAULTMARKERCOLOR)
-        # set the width of the pen to width
         ellipsePen.setWidth(width)
-        # set the newly created pen as the ellipse's pen
+        ellipseRect = QtCore.QRectF(x, y, size, size)
+        ellipseRect.moveCenter(QtCore.QPointF(x, y))
+
+        self.ellipse = QtWidgets.QGraphicsEllipseItem(ellipseRect)
         self.ellipse.setPen(ellipsePen)
+
+    @property
+    def x(self):
+        return self._x
+    @x.setter
+    def x(self, value):
+        self._x = value
+
+    @property
+    def y(self):
+        return self._y
+    @y.setter
+    def y(self, value):
+        self._y = value
 
     def setDesignation(self, designation=None):
         """Indicate the marker as a Start Point, an End Point or neither, as
@@ -320,27 +326,25 @@ class TrackMarker(QtWidgets.QListWidgetItem):
         self.ellipse.setRect(newRect)
 
     def getAngle(self, origin, referenceMarker=None):
-        """Given an origin - a tuple whose first element is an x-coordinate and
-        whose second element is a y-coordinate (both floats)- , return the
-        marker's angular coordinate in degrees (a float), where origin is the
-        pole in the polar coordinate system. If referenceMarker - a TrackMarker
-        object - is given, return the angle between the line joining the origin
-        to the marker and the line joining the origin to the referenceMarker.
-        """
+        """Return the marker's angular coordinate.
 
-        # define the marker vector, a QLineF object joining the origin to the
-        # center of the marker's ellipse
-        markerX = self.ellipse.rect().center().x()
-        markerY = self.ellipse.rect().center().y()
-        markerVector = QtCore.QLineF(origin[0], origin[1], markerX, markerY)
+        Parameters:
+        origin          : a tuple of x, and y values for the origin.
+        referenceMarker : another marker to use as an angle reference with the origin
+
+        Returns:
+        angle : The marker's angle in polar coordinates using the origin, or
+                relative to the line connecting the origin to tyhe reference marker.
+        """
+        markerVector = QtCore.QLineF(origin[0], origin[1], self.x, self.y)
 
         # define the reference vector (the vector with respect to which the
         # angle of the marker vector is to be determined)
         # if a referenceMarker was given, the reference vector is the line
         # joining the origin to the center of the reference marker' ellipse
         if referenceMarker:
-            referenceX = referenceMarker.ellipse.rect().center().x()
-            referenceY = referenceMarker.ellipse.rect().center().y()
+            referenceX = referenceMarker.x
+            referenceY = referenceMarker.y
         # otherwise the reference vector is the polar axis (a horizontal line
         # terminated at the left by the pole)
         else:
