@@ -481,13 +481,17 @@ class MainWidget(skeleton.GuiSkeleton):
             self.displayMessage(
                 "NOTICE: Track end point must be selected first.")
             return
-        if self.dlLineEdit.text():
+        try:
             dl = float(self.dlLineEdit.text())
-        else:
-            dl = 0
+        except ValueError:
+            dl = 0.
 
         # Do the calculations
         self.fittedCircle = circlefit.fitCircle(self.markerList)
+        self.fittedCircle['cmRadius'] = self.fittedCircle['radius'] * constants.CMPERPX
+        self.fittedCircle['cmRadiusErr'] = self.fittedCircle['radiusErr'] * constants.CMPERPX
+        self.fittedCircle['cmRadiusCal'] = self.fittedCircle['radius'] * constants.ERRCMPERPX
+
         startAngle = self.markerList.getStartPoint().getAngle(
                          (self.fittedCircle['centerX'],
                           self.fittedCircle['centerY']))
@@ -519,39 +523,25 @@ class MainWidget(skeleton.GuiSkeleton):
 
         # Print the calculation results
         # raw circle parameters
-        self.displayMessage("---Fitted Circle---")
-        self.displayMessage(
-            "Center (x coord):\t{:.5f} +/- {:.5f} [px]".format(
-                self.fittedCircle['centerX'], 
-                self.fittedCircle['centerXErr']))
-        self.displayMessage(
-            "Center (y coord):\t{:.5f} +/- {:.5f} [px]".format(
-                self.fittedCircle['centerY'],
-                self.fittedCircle['centerYErr']))
-        self.displayMessage(
-            "Radius (px):\t{:.5f} +/- {:.5f} [px]".format(
-                self.fittedCircle['radius'],
-                self.fittedCircle['radiusErr']))
-        # converted circle parameters
-        self.displayMessage(
-            "Radius (cm):\t{:.5f} +/- {:.5f} (Stat) +/- {:.5f} (Cal) [cm]".format(
-                self.fittedCircle['radius']*constants.CMPERPX, 
-                self.fittedCircle['radiusErr']*constants.CMPERPX, 
-                self.fittedCircle['radius']*constants.ERRCMPERPX))
+        cParamMessage = """---Fitted Circle---
+        Center (x coord):\t{centerX:.5f} +/- {centerXErr:.5f} [px]           
+        Center (y coord):\t{centerY:.5f} +/- {centerYErr:.5f} [px]
+        Radius (px):\t{radius:.5f} +/- {radiusErr:.5f} [px]
+        Radius (cm):\t{cmRadius:.5f} +/- {cmRadiusErr:.5f} (Stat) +/- {cmRadiusCal:.5f} (Cal) [cm]
+        """
+        self.displayMessage(cParamMessage.format(**self.fittedCircle))
 
-        self.displayMessage("---Track Momentum---")
-        self.displayMessage(
-            "Track Momentum:\t{:.5f} +/- {:.5f} (Stat) +/- {:.5f} (Cal) [MeV/c]".format(
-                momentum,
-                momentumStatErr,
-                momentumCalErr))
+        mMessage = """---Track Momentum---
+        Track Momentum:\t{:.5f} +/- {:.5f} (Stat) +/- {:.5f} (Cal) [MeV/c]
+        """
+        self.displayMessage(mMessage.format(momentum, momentumStatErr, momentumCalErr))
 
-        self.displayMessage("---Track Length---")
-        self.displayMessage(
-            "Track Length (px):\t{:.5f} [px]".format(trackLengthPx))
-        self.displayMessage(
-            "Track Length (cm):\t{:.5f} +/- {:.5f} [cm]".format(
-                trackLengthCm, trackLengthCmErr))
+        trackLengthMessage = """---Track Length---
+        Track Length (px):\t{:.5f} [px]
+        Track Length (cm):\t{:.5f} +/- {:.5f} [cm]
+        """
+        self.displayMessage(trackLengthMessage.format(
+            trackLengthPx, trackLengthCm, trackLengthCmErr))
 
     def calcOptDensity(self):
         """Calculate the optical density of a track and print it to the console.
