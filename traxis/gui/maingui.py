@@ -554,28 +554,22 @@ class MainWidget(skeleton.GuiSkeleton):
                 trackLengthCm, trackLengthCmErr))
 
     def calcOptDensity(self):
-        """Calculate the optical density of the portion of a track that is
-        covered by the momentum arc and print it to the console.
+        """Calculate the optical density of a track and print it to the console.
         """
-
-        # return if track momentum has not yet been calculated
+        # Check the user's inputs
         if not self.momentumArc.centralArc:
             self.displayMessage(
                 "NOTICE: Track momentum must be calculated first.")
             return
-
-        # get the dL value from the dL text box. If the box is empty, use
-        # a value of zero
-        if self.dlLineEdit.text():
+        try:
             dl = float(self.dlLineEdit.text())
-        else:
+        except ValueError:
             dl = 0
-
-        # if the dl is 0, return
         if dl == 0:
             self.displayMessage("NOTICE: dL must be non-zero.")
             return
 
+        ## Calculations
         # compute the total blackness of all the pixels contained within the
         # portion of the sceneImage that is covered by the momentum arc
         # note: ArcItems have start and span angles in units of millionths of a
@@ -585,15 +579,12 @@ class MainWidget(skeleton.GuiSkeleton):
             self.momentumArc.centralArc.startAngle() / 1e6,
             self.momentumArc.centralArc.spanAngle() / 1e6)
 
-        # calculate the length of the momentum arc in px
         trackLengthPx = self.fittedCircle['radius'] * \
                  self.momentumArc.centralArc.spanAngle() / 1e6 * (math.pi / 180)
 
-        # convert track length from px to cm
         trackLengthCm = trackLengthPx * constants.CMPERPX
         trackLengthCmErr = trackLengthPx * constants.ERRCMPERPX
 
-        # calculate optical density - total blackness per unit length
         optDensity = blackness / trackLengthCm
         optDensityErr = optDensity * (
                 (trackLengthCmErr / trackLengthCm)**2 + \
@@ -606,46 +597,37 @@ class MainWidget(skeleton.GuiSkeleton):
                 optDensity, optDensityErr, dl))
 
     def calcAngle(self):
-        """Calculate the angle between the reference line and the tangent to
-        the fitted circle at the designated start point and print it to the
-        console.
-        """
+        """Calculate the starting angle and print it to the console.
 
-        # return if track momentum has not yet been calculated
+        The angle is calculated between the reference angle, and The tangent
+        line at the designated start point of the circle.
+        """
+        # Check user inputs
         if not self.momentumArc.centralArc:
             self.displayMessage(
                 "NOTICE: Track momentum must be calculated first.")
             return
-
-        # return if the start point has not yet been defined
         if not self.markerList.getStartPoint():
             self.displayMessage(
                 "NOTICE: Start track point must be selected first.")
             return
-
-        # return if the angle reference line has not yet been drawn
         if not self.angleRefLine.finalPoint:
             self.displayMessage(
                 "NOTICE: Angle Reference Line must be drawn first.")
             return
 
-        # get the tangent line to the fitted circle at the start point along
-        # with the two lines that the tangent may lie between within error
+        # Calculations
         tangentLine, tangentErrA, tangentErrB = anglecalc.tangentCalc(
                           self.fittedCircle, self.markerList.getStartPoint())
-
-        # if a tangent line has been drawn before, remove the old tangent
-        if self.tangentLine:
-            self.tangentLine.scene().removeItem(self.tangentLine)
-        # add the new tangent line to the graphics scene
-        self.tangentLine = tangent.TangentLine(tangentLine,
-                                               self.lineWidth, self.scene)
-
-        # compute the angle between the tangent line and the reference line
-        # along with the error on the angle
         angle, angleErr = anglecalc.openingAngle(tangentLine,
                                                  tangentErrA, tangentErrB,
                                                  self.angleRefLine)
+
+        # Drawing
+        if self.tangentLine:
+            self.tangentLine.scene().removeItem(self.tangentLine)
+        self.tangentLine = tangent.TangentLine(tangentLine,
+                                               self.lineWidth, self.scene)
 
         # print the opening angle to the console
         self.displayMessage("---Opening Angle---")
