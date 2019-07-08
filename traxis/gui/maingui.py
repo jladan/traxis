@@ -505,13 +505,9 @@ class MainWidget(skeleton.GuiSkeleton):
         trackLengthCm = trackLengthPx * constants.CMPERPX
         trackLengthCmErr = trackLengthPx * constants.ERRCMPERPX
 
-        # Given a track radius, R, in cm, a magnetic field, B,
-        # in kG and the speed of light, c, in Giga metres per second, the
-        # track momentum in MeV/c can be computed as p = c*B*R
-        momentumFactor = constants.C * constants.MAGNETICFIELD * constants.CMPERPX
-        momentum = momentumFactor * self.fittedCircle['radius']
-        momentumStatErr = momentumFactor * self.fittedCircle['radiusErr']
-        momentumCalErr = momentum / constants.CMPERPX * constants.ERRCMPERPX
+        momentum, mStatErr, mCalErr = circlefit.calc_momentum(
+                self.fittedCircle['radius'],
+                self.fittedCircle['radiusErr'])
 
         # draw the new momentum arc (removing previous drawn elements)
         if self.tangentLine:
@@ -535,7 +531,7 @@ class MainWidget(skeleton.GuiSkeleton):
         mMessage = """---Track Momentum---
         Track Momentum:\t{:.5f} +/- {:.5f} (Stat) +/- {:.5f} (Cal) [MeV/c]
         """
-        self.displayMessage(mMessage.format(momentum, momentumStatErr, momentumCalErr))
+        self.displayMessage(mMessage.format(momentum, mStatErr, mCalErr))
 
         trackLengthMessage = """---Track Length---
         Track Length (px):\t{:.5f} [px]

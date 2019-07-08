@@ -18,6 +18,8 @@
 import numpy as np
 from scipy import optimize
 
+import traxis.constants as constants
+
 def _createXYArrays(markerList):
     """Given markerList, a MarkerList object, return two numpy arrays, one
     containing the x-coordinates of the markers and the second the
@@ -129,3 +131,28 @@ def fitCircle(markerList):
          fitParams['radius']*fitParams['centerYErr'])**2)
 
     return fitParams
+
+def calc_momentum(radius, uncertainty):
+    """ Calculate the track momentum and errors from a fitted circle.
+
+    Given a track radius, R, in cm, a magnetic field, B,
+    in kG and the speed of light, c, in Giga metres per second, the
+    track momentum in MeV/c can be computed as p = c*B*R
+
+    Parameters
+    ----------
+    radius      : The track radius in pixels
+    uncertainty : the statistical uncertainty of the track radius
+
+    Returns
+    -------
+    momemtum    : the calculated momentum
+    stat_unc    : the statistical uncertainty from the fit
+    cal_unc     : the uncertainty due to calibration
+    """
+    factor = constants.C * constants.MAGNETICFIELD * constants.CMPERPX
+    momentum = factor * radius
+    stat_unc = factor * uncertainty
+    cal_unc = momentum / constants.CMPERPX * constants.ERRCMPERPX
+    return momentum, stat_unc, cal_unc
+
