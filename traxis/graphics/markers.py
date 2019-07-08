@@ -20,88 +20,78 @@ from traxis import constants
 
 
 class MarkerList(QtWidgets.QListWidget):
-    """Track Marker list class. Instantiate by optionally passing a parent
-    widget. This class subclasses QListWidget and is intended to contain
-    TrackMarker objects (as opposed to regular QListWidgetItem objects).
-    This class implements a number of methods to work with the extra
-    features that TrackMarker adds to QListWidgetItem.
+    """Track Marker list class.
+
+    This class is intended to contain TrackMarker objects, and implements a
+    number of methods to work with the extra features that TrackMarker adds to
+    QListWidgetItem.
     """
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
     def addMarker(self, x, y, size, width, scene):
-        """Create a new TrackMarker object at position (x, y) with size size
-        and pen width width. Set this MarkerList as the new marker's parent,
-        set the new marker as this list's current item and add the new marker's
-        ellipse to scene, a QGraphicsScene. Return the TrackMarker object.
-        """
+        """Create a new TrackMarker and add it to the list.
 
-        # get the last item in the marker list. The last item will always have
-        # the largest id number so incrementing its id will give a unique id
-        # for the new marker
+        The marker is created with this list as its parent, and is drawn to the
+        designated QGraphicsScene.
+
+        Parameters
+        ----------
+        x, y  : (floats) marker coordinates
+        size  : size of ellipse to draw
+        width : pen width
+        scene : the QGraphicsScene to draw the marker on.
+
+        Returns
+        -------
+        the TrackMarker object.
+        """
+        # use the last item in the list to determine the new marker's id
         lastItem = self.item(self.count()-1)
-        # if the list isn't empty...
         if lastItem:
             newMarkerId = lastItem.id + 1
-        # otherwise if it is empty, set the new marker's id to 1
         else:
             newMarkerId = 1
 
-        # create the new TrackMarker object, passing this list widget as the
-        # parent
         newMarker = TrackMarker(newMarkerId, x, y, size, width, self)
-
-        # set the newly created marker as the current item for this list
         self.setCurrentItem(newMarker)
-
-        # add the new marker's ellipse to the graphics scene
         scene.addItem(newMarker.ellipse)
 
-        # return the new TrackMarker object
         return newMarker
 
     def deleteMarker(self, marker):
         """Remove the TrackMarker object marker from this marker list."""
-
         # remove the marker's ellipse from its graphics scene
         marker.ellipse.scene().removeItem(marker.ellipse)
 
-        # get the row number of marker within this list and then pass it to
-        # the takeItem method to remove marker from this list
         markerRow = self.row(marker)
         self.takeItem(markerRow)
 
     def empty(self):
         """Remove all TrackMarker objects from this marker list."""
-
-        # loop over all the markers in this list and remove each marker's
-        # ellipse from the graphics scene
+        # First remove the markers from the scene
         for row in range(self.count()):
             marker = self.item(row)
             marker.ellipse.scene().removeItem(marker.ellipse)
-
-        # remove all markers from this list
+        # now it's safe to clear the list
         self.clear()
 
     def rescale(self, size, width):
-        """Set the size of each marker's ellipse in this list to size and the
-        pen width of each marker's ellipse to width.
-        """
+        """Set the size of each marker's circle.
 
-        # loop over all the markers in this list and rescale them one by one
+        Parameters
+        size  : the circle's diameter
+        width : the pen width
+        """
         for row in range(self.count()):
             marker = self.item(row)
             marker.rescale(size, width)
 
     def setStartPoint(self, marker):
-        """Designate marker as the start point for this list of markers."""
-
-        # get the marker currently designated as the start point (if there is
-        # one)
+        """Designate marker as the start point."""
+        # Clear the old startpoint's designation
         oldStartPoint = self.getStartPoint()
-        # if there currently is a start point, reset its designation and
-        # update its colour to the default
         if oldStartPoint:
             oldStartPoint.setDesignation()
             oldStartPoint.recolor()
@@ -111,12 +101,8 @@ class MarkerList(QtWidgets.QListWidget):
 
     def setEndPoint(self, marker):
         """Designate marker as the end point for this list of markers."""
-
-        # get the marker currently designated as the end point (if there is
-        # one)
+        # Clear the old startpoint's designation
         oldEndPoint = self.getEndPoint()
-        # if there currently is an end point, reset its designation and
-        # update its colour to the default
         if oldEndPoint:
             oldEndPoint.setDesignation()
             oldEndPoint.recolor()
@@ -125,75 +111,48 @@ class MarkerList(QtWidgets.QListWidget):
         marker.setDesignation('end')
 
     def getStartPoint(self):
-        """Return the TrackMarker object designated as the start point for this
-        list of markers or None if no marker has been designated as the start
-        point.
-        """
+        """Return the TrackMarker object designated as the start point
 
-        # loop over all the markers in this list and return the first one found
-        # to have the designation 'start' (since there should only be one)
+        If no TrackMarker is designated as the start, return None.
+        """
         for row in range(self.count()):
             marker = self.item(row)
             if marker.designation == 'start':
                 return marker
-
-        # if no marker in this list was found to have the designation 'start',
-        # return None
         return None
 
     def getEndPoint(self):
-        """Return the TrackMarker object designated as the end point for this
-        list of markers or None if no marker has been designated as the end
-        point.
-        """
+        """Return the TrackMarker object designated as the end point
 
-        # loop over all the markers in this list and return the first one found
-        # to have the designation 'end' (since there should only be one)
+        If no TrackMarker is designated as the end, return None.
+        """
         for row in range(self.count()):
             marker = self.item(row)
             if marker.designation == 'end':
                 return marker
-
-        # if no marker in this list was found to have the designation 'end',
-        # return None
         return None
 
     def highlightCurrent(self):
-        """Change the colour of the currently selected marker to the
-        highlighted colour and change the colour of the rest of the
-        markers to their appropriate non-highlighted colours (default colour,
-        start colour, or end colour).
-        """
-
-        # simply loop over all the markers in this list and call their recolor
-        # method, which will appropriately recolor the marker based on its
-        # designation or whether it is the currently selected marker.
+        """Change all markers to their correct colour."""
         for row in range(self.count()):
             marker = self.item(row)
             marker.recolor()
 
     def selectNext(self):
         """Set the currently selected marker to the next marker in the list."""
-
         # if there are no markers selected (currentRow() == -1) or if the
         # currently selected marker is the last one in the list, return
         if self.currentRow() == -1 or self.currentRow() == self.count() - 1:
             return
-        # otherwise set the current selection to the next marker in the list
         else:
             self.setCurrentRow(self.currentRow() + 1)
 
     def selectPrevious(self):
-        """Set the currently selected marker to the previous marker in the
-        list.
-        """
-
+        """Set the currently selected marker to the previous marker in the list."""
         # if there are no markers selected (currentRow() == -1) or if the
         # currently selected marker is the first one in the list, return
         if self.currentRow() == -1 or self.currentRow() == 0:
             return
-        # otherwise set the current selection to the previous marker in the
-        # list
         else:
             self.setCurrentRow(self.currentRow() - 1)
 
@@ -265,24 +224,16 @@ class TrackMarker(QtWidgets.QListWidgetItem):
         """Indicate the marker as a Start Point, an End Point or neither, as
         specified by designation (a string).
         """
-
-        # the only valid values for designation are 'start', 'end', or None
-        # if some other value was given, don't change the current designation
         if designation not in [None, 'start', 'end']:
             return
 
-        # set the designation
         self.designation = designation
 
-        # if the new designation is 'start', prepend an "s - " to the marker's
-        # text/name
+        # indicate the designation in the displayed name
         if designation == 'start':
             self.setText("s - Point {}".format(self.id))
-        # if the new designation is 'end', prepend an "e - " to the marker's
-        # text/name
         elif designation == 'end':
             self.setText("e - Point {}".format(self.id))
-        # otherwise remove any extra characters from the marker text
         else:
             self.setText("Point {}".format(self.id))
 
@@ -290,33 +241,24 @@ class TrackMarker(QtWidgets.QListWidgetItem):
         """Update the colour of the marker based on its designation or whether
         it is currently selected.
         """
-
-        # create a new pen, starting from the existing pen of the marker's
-        # ellipse
         newPen = self.ellipse.pen()
 
-        # if the marker is currently selected, set pen colour to highlighted
-        # marker colour
+        # Set the pen's colour based on the designation
         if self.isSelected():
             newPen.setColor(constants.HIGHLIGHTMARKERCOLOR)
-        # if the marker is the start point, set pen colour to start colour
         elif self.designation == 'start':
             newPen.setColor(constants.STARTMARKERCOLOR)
-        # if the marker is the end point, set pen colour to end colour
         elif self.designation == 'end':
             newPen.setColor(constants.ENDMARKERCOLOR)
-        # otherwise set pen colour to default marker colour
         else:
             newPen.setColor(constants.DEFAULTMARKERCOLOR)
 
-        # set the recoloured pen as the marker's ellipse's pen
         self.ellipse.setPen(newPen)
 
     def move(self, dx, dy):
         """Move the marker from its current position (x, y) to (x+dx, y+dy).
         dx and dy are floats.
         """
-
         # create a new rect, starting from the existing rect of the marker's
         # ellipse
         newRect = self.ellipse.rect()
@@ -338,15 +280,10 @@ class TrackMarker(QtWidgets.QListWidgetItem):
         """
         markerVector = QtCore.QLineF(origin[0], origin[1], self.x, self.y)
 
-        # define the reference vector (the vector with respect to which the
-        # angle of the marker vector is to be determined)
-        # if a referenceMarker was given, the reference vector is the line
-        # joining the origin to the center of the reference marker' ellipse
+        # define the the vector to measure the angle from
         if referenceMarker:
             referenceX = referenceMarker.x
             referenceY = referenceMarker.y
-        # otherwise the reference vector is the polar axis (a horizontal line
-        # terminated at the left by the pole)
         else:
             referenceX = origin[0] + 1
             referenceY = origin[1]
@@ -358,35 +295,22 @@ class TrackMarker(QtWidgets.QListWidgetItem):
         return angle
 
     def rescale(self, size, width):
-        """Set the width and height of the marker's ellipse's rect to size (a
-        float) and set the width of the marker's ellipse's pen to width (a
-        float).
-        """
-
-        # set a minimum rect size
+        """Set the radius and penwidth of the marker's circle."""
         if size < 2:
             size = 2
-
-        # set a minimum pen width
         if width < 1:
             width = 1
 
-        # create a new rect, starting from the existing rect of the marker's
-        # ellipse
+        # Make the new circle by updating ellipse's rectangle
         newRect = self.ellipse.rect()
-        # set the width and height of the new rect
         newRect.setWidth(size)
         newRect.setHeight(size)
         # move the rect's center to match that of the original rect's (the
         # center gets shifted when resizing)
         newRect.moveCenter(self.ellipse.rect().center())
-        # set the resized rect as the marker's ellipse's rect
         self.ellipse.setRect(newRect)
 
-        # create a new pen, starting from the existing pen of the marker's
-        # ellipse
+        # Set the circle's penwidth
         newPen = self.ellipse.pen()
-        # set the width of the new pen
         newPen.setWidth(width)
-        # set the resized pen as the marker's ellipse's pen
         self.ellipse.setPen(newPen)
