@@ -463,39 +463,62 @@ class MainWidget(skeleton.GuiSkeleton):
     # Calculation Button Event Handlers
     ###################################
     def calcTrackMomentum(self):
-        """Fit a circle to the track markers in markerList and print the 
-        parameters of the fit along with the momentum computed from these
-        parameters to the console. Draw the momentum arc using the fit
-        parameters. Print the length of the momentum arc to the console.
+        """ Perform the 'Calculate Track Momentum' behaviour.
+        
+        A circle is fit to the track markers in markerList. The calculated
+        radius, momentum, length, and errors are then displayed.  The fitted
+        momentum arc is drawn over the image.
         """
-
-        # need a minimum of 3 points to fit a circle
+        # User input checks:
         if self.markerList.count() < 3:
-            self.displayMessage("NOTICE: Less than 3 points to fit.")
+            self.displayMessage("NOTICE: At least 3 points are required to calculate momentum.")
             return
-
-        # return if the start point has not yet been defined
         if not self.markerList.getStartPoint():
             self.displayMessage(
                 "NOTICE: Track start point must be selected first.")
             return
-
-        # return if the end point has not yet been defined
         if not self.markerList.getEndPoint():
             self.displayMessage(
                 "NOTICE: Track end point must be selected first.")
             return
+        if self.dlLineEdit.text():
+            dl = float(self.dlLineEdit.text())
+        else:
+            dl = 0
 
-        # remove the tangent line if it was drawn
+        # Do the calculations
+        self.fittedCircle = circlefit.fitCircle(self.markerList)
+        startAngle = self.markerList.getStartPoint().getAngle(
+                         (self.fittedCircle['centerX'],
+                          self.fittedCircle['centerY']))
+        spanAngle = self.markerList.getEndPoint().getAngle(
+                        (self.fittedCircle['centerX'], 
+                         self.fittedCircle['centerY']), 
+                        self.markerList.getStartPoint())
+        trackLengthPx = self.fittedCircle['radius'] * spanAngle * (math.pi / 180)
+
+        trackLengthCm = trackLengthPx * constants.CMPERPX
+        trackLengthCmErr = trackLengthPx * constants.ERRCMPERPX
+
+        # Given a track radius, R, in cm, a magnetic field, B,
+        # in kG and the speed of light, c, in Giga metres per second, the
+        # track momentum in MeV/c can be computed as p = c*B*R
+        momentumFactor = constants.C * constants.MAGNETICFIELD * constants.CMPERPX
+        momentum = momentumFactor * self.fittedCircle['radius']
+        momentumStatErr = momentumFactor * self.fittedCircle['radiusErr']
+        momentumCalErr = momentum / constants.CMPERPX * constants.ERRCMPERPX
+
+        # draw the new momentum arc (removing previous drawn elements)
         if self.tangentLine:
             self.tangentLine.scene().removeItem(self.tangentLine)
             self.tangentLine = None
+        self.momentumArc.draw(
+            self.fittedCircle['centerX'], self.fittedCircle['centerY'],
+            self.fittedCircle['radius'], startAngle, spanAngle, dl,
+            self.lineWidth, self.scene)
 
-        # fit a circle to the track markers and store the fit parameters
-        # in the fittedCircle attribute
-        self.fittedCircle = circlefit.fitCircle(self.markerList)
-
-        # print the fit parameters to the console
+        # Print the calculation results
+        # raw circle parameters
         self.displayMessage("---Fitted Circle---")
         self.displayMessage(
             "Center (x coord):\t{:.5f} +/- {:.5f} [px]".format(
@@ -509,62 +532,20 @@ class MainWidget(skeleton.GuiSkeleton):
             "Radius (px):\t{:.5f} +/- {:.5f} [px]".format(
                 self.fittedCircle['radius'],
                 self.fittedCircle['radiusErr']))
-        # convert the radius from px to cm and print to console
+        # converted circle parameters
         self.displayMessage(
             "Radius (cm):\t{:.5f} +/- {:.5f} (Stat) +/- {:.5f} (Cal) [cm]".format(
                 self.fittedCircle['radius']*constants.CMPERPX, 
                 self.fittedCircle['radiusErr']*constants.CMPERPX, 
                 self.fittedCircle['radius']*constants.ERRCMPERPX))
 
-        # compute the track momentum from the track radius and print to
-        # console. Given a track radius, R, in cm, a magnetic field, B,
-        # in kG and the speed of light, c, in Giga metres per second, the
-        # track momentum in MeV/c can be computed as p = c*B*R
         self.displayMessage("---Track Momentum---")
         self.displayMessage(
             "Track Momentum:\t{:.5f} +/- {:.5f} (Stat) +/- {:.5f} (Cal) [MeV/c]".format(
-                constants.C*constants.MAGNETICFIELD* \
-                self.fittedCircle['radius']*constants.CMPERPX,
-                constants.C*constants.MAGNETICFIELD* \
-                self.fittedCircle['radiusErr']*constants.CMPERPX, 
-                constants.C*constants.MAGNETICFIELD* \
-                self.fittedCircle['radius']*constants.ERRCMPERPX))
+                momentum,
+                momentumStatErr,
+                momentumCalErr))
 
-        # compute the start and span angles of the momentum arc using the start
-        # and end markers and the fitted circle center
-        startAngle = self.markerList.getStartPoint().getAngle(
-                         (self.fittedCircle['centerX'],
-                          self.fittedCircle['centerY']))
-        spanAngle = self.markerList.getEndPoint().getAngle(
-                        (self.fittedCircle['centerX'], 
-                         self.fittedCircle['centerY']), 
-                        self.markerList.getStartPoint())
-
-        # get the dL value from the dL text box. If the box is empty, use
-        # a value of 0
-        if self.dlLineEdit.text():
-            dl = float(self.dlLineEdit.text())
-        else:
-            dl = 0
-
-        # draw the momentum arc using the parameters of the fitted circle, the
-        # start and span angles and the dL
-        self.momentumArc.draw(
-            self.fittedCircle['centerX'], self.fittedCircle['centerY'],
-            self.fittedCircle['radius'], startAngle, spanAngle, dl,
-            self.lineWidth, self.scene)
-
-        # calculate the length of the momentum arc in px
-        # note: ArcItems have start and span angles in units of millionths of a
-        # degree, so divide them by 1e6
-        trackLengthPx = self.fittedCircle['radius'] * \
-                 self.momentumArc.centralArc.spanAngle() / 1e6 * (math.pi / 180)
-
-        # convert track length from px to cm
-        trackLengthCm = trackLengthPx * constants.CMPERPX
-        trackLengthCmErr = trackLengthPx * constants.ERRCMPERPX
-
-        # print the track length to the console
         self.displayMessage("---Track Length---")
         self.displayMessage(
             "Track Length (px):\t{:.5f} [px]".format(trackLengthPx))
