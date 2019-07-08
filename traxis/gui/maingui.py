@@ -581,10 +581,10 @@ class MainWidget(skeleton.GuiSkeleton):
                 (blacknessErr / blackness)**2)**0.5
 
         # print the optical density to the console
-        self.displayMessage("---Optical Density---")
-        self.displayMessage(
-            "Optical density:\t{:.5f} +/- {:.5f} [1/cm] (with dL={})".format(
-                optDensity, optDensityErr, dl))
+        message = """---Optical Density---
+        Optical density:\t{:.5f} +/- {:.5f} [1/cm] (with dL={})
+        """
+        self.displayMessage(message.format(optDensity, optDensityErr, dl))
 
     def calcAngle(self):
         """Calculate the starting angle and print it to the console.
@@ -620,9 +620,10 @@ class MainWidget(skeleton.GuiSkeleton):
                                                self.lineWidth, self.scene)
 
         # print the opening angle to the console
-        self.displayMessage("---Opening Angle---")
-        self.displayMessage("Opening Angle:\t{:.5f} +/- {:.5f}".format(angle,
-                                                                     angleErr))
+        message = """---Opening Angle---
+        Opening Angle:\t{:.5f} +/- {:.5f}
+        """
+        self.displayMessage(message.format(angle, angleErr))
 
     ##############################
     # Mode Change Event Handlers
