@@ -11,18 +11,27 @@ of tracks in digitized bubble chamber images.
 
 ## Installing and Running
 
-On Linux, UNIX, Mac:
+It can now be installed with pip:
 
 ```
-tar xzvf traxis-1.0.0.tgz
-cd traxis-1.0.0
+pip install traxis
+# Then run the command
+runtraxis
+```
+
+Or, from source without installation,
+on Linux, UNIX, Mac:
+
+```
+tar xzvf traxis-*.tar.gz
+cd traxis
 ./runtraxis
 ```
 
 On Windows:
 
-- Extract traxis-1.0.0.zip
-- Go to extracted traxis-1.0.0 folder
+- Extract traxis.zip
+- Go to extracted traxis folder
 - Execute runtraxis with Python 3
 
 ## Dependencies
