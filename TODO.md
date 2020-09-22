@@ -47,7 +47,7 @@ traxis/calc/circlefit.py
 ------------------------
 - see if QListWidget has an __iter__() method for all the for loops
 - I am uncomfortable with the markers having their drawn centers used as points, rather than storing their actual values
-- The doc punctuation is terrible!
+- The doc punctuation is bad.
 - look into whether the algorithm using means is the best way to fit the circle
 
 traxis/gui/mainwindow.py
