@@ -46,7 +46,7 @@ def calcBlackness(image, circleParams, dL, startAngle, spanAngle):
     # rectangles, adding each point to the appropriate set
     radii = np.linspace(circleParams['radius'] - dL - dLErr,
                         circleParams['radius'] + dL + dLErr,
-                        2 * (dL + dLErr) + 1)
+                        int(2 * (dL + dLErr) + 1))
     for r in radii:
         # for the number of angles to generate, use twice the length of the
         # arc in pixels to ensure every pixel in the region is covered
