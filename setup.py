@@ -19,5 +19,10 @@ setup(
     description='An application to measure bubble-chambre images for the UofT advanced physics lab.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    scripts=['runtraxis']
+    scripts=['runtraxis'],
+    entry_points={
+        "gui_scripts": [
+            "traxis = traxis.__main__:main"
+        ]
+    }, 
 )
