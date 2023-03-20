@@ -99,12 +99,30 @@ class MomentumArc(object):
 
     def draw(self, centerX, centerY, radius, startAngle,
              spanAngle, dl, width, scene):
-        """First, reset the momentum arc if it has already been drawn. Then 
+        """Draw the momentum arc and bounding arcs.
+
+        First, reset the momentum arc if it has already been drawn. Then 
         create three ArcItems, one with radius radius, the second with radius
         radius+dl and the third with radius radius-dl. Set each arc's center to
         (centerX, centerY), the start angle to startAngle and the span
         angle to spanAngle, both given in degrees. Set each arc's pen width to
         width and add each arc to scene, a QGraphicsScene.
+
+        Parameters
+        ----------
+        centerX : int
+        centerY : int
+            center of the fitted circle
+        radius : float
+            radius of the fitted circle
+        startAngle : float (degrees)
+            starting angle of the fitted arc
+        spanAngle : float (degrees)
+            length of the arc in degrees
+        dl : int
+            width of the region of interest for optical density
+        scene : QGraphicsScene
+            scene on which to draw the arcs
         """
 
         # reset the momentum arc object
@@ -113,6 +131,7 @@ class MomentumArc(object):
         # set a minimum pen width
         if width < 1:
             width = 1
+        width = int(width)
 
         # create a pen for the arcs using the momentum arc colour
         momentumPen = QtGui.QPen(constants.ARCCOLOR)
@@ -133,8 +152,8 @@ class MomentumArc(object):
         # set the start and span angles of the central arc to the given values.
         # the arc item's angle unit is millionths of a degree so multiply the
         # given angles (which are in degrees) by 1e6
-        self.centralArc.setStartAngle(1e6 * startAngle)
-        self.centralArc.setSpanAngle(1e6 * spanAngle)
+        self.centralArc.setStartAngle(int(1e6 * startAngle))
+        self.centralArc.setSpanAngle(int(1e6 * spanAngle))
         # set the central arc's pen to the pen created above
         self.centralArc.setPen(momentumPen)
 
@@ -156,8 +175,8 @@ class MomentumArc(object):
         # set the start and span angles of the outer arc to the given values.
         # the arc item's angle unit is millionths of a degree so multiply the
         # given angles (which are in degrees) by 1e6
-        self.outerArc.setStartAngle(1e6 * startAngle)
-        self.outerArc.setSpanAngle(1e6 * spanAngle)
+        self.outerArc.setStartAngle(int(1e6 * startAngle))
+        self.outerArc.setSpanAngle(int(1e6 * spanAngle))
         # set the outer arc's pen to the pen created above
         self.outerArc.setPen(momentumPen)
 
@@ -176,8 +195,8 @@ class MomentumArc(object):
         # set the start and span angles of the inner arc to the given values.
         # the arc item's angle unit is millionths of a degree so multiply the
         # given angles (which are in degrees) by 1e6
-        self.innerArc.setStartAngle(1e6 * startAngle)
-        self.innerArc.setSpanAngle(1e6 * spanAngle)
+        self.innerArc.setStartAngle(int(1e6 * startAngle))
+        self.innerArc.setSpanAngle(int(1e6 * spanAngle))
         # set the outer arc's pen to the pen created above
         self.innerArc.setPen(momentumPen)
 
@@ -229,6 +248,7 @@ class MomentumArc(object):
         # set a minimum pen width
         if width < 1:
             width = 1
+        width = int(width)
 
         # if the arcs haven't been drawn yet, return
         if not self.centralArc:

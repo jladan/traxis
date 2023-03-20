@@ -196,6 +196,7 @@ class TrackMarker(QtWidgets.QListWidgetItem):
         # set a minimum pen width
         if width < 1:
             width = 1
+        width = int(width)
 
         # create the ellipse to be drawn as the marker
         ellipsePen = QtGui.QPen(constants.DEFAULTMARKERCOLOR)
@@ -300,6 +301,7 @@ class TrackMarker(QtWidgets.QListWidgetItem):
             size = 2
         if width < 1:
             width = 1
+        width = int(width)
 
         # Make the new circle by updating ellipse's rectangle
         newRect = self.ellipse.rect()
