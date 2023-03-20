@@ -55,28 +55,19 @@ class GuiSkeleton(QtWidgets.QWidget):
         self._add_marker_list()
 
         # first vertical GUI segment divider in top portion layout
-        self.vLineDiv1 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv1)
-        self.vLineDiv1.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.topUiLayout.addWidget(self._make_vline())
 
         # "technical buttons" panel (reset, zoom, calculations)
         self._add_technical_buttons()
 
         # second vertical GUI segment divider in top portion layout
-        self.vLineDiv2 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv2)
-        self.vLineDiv2.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.topUiLayout.addWidget(self._make_vline())
 
         # "user selection" GUI segment
         self._add_user_selection()
 
         # third vertical GUI segment divider in top portion layout
-        self.vLineDiv3 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv3)
-        self.vLineDiv3.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.topUiLayout.addWidget(self._make_vline())
 
         # console GUI segment
         self._add_console()
@@ -91,6 +82,12 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # layout for the bottom portion of the user interface
         self._add_bottom_ui()
+
+    def _make_vline(self):
+        vline = QtWidgets.QFrame(self)  # vertical divider widget
+        vline.setFrameShape(QtWidgets.QFrame.VLine)
+        vline.setFrameShadow(QtWidgets.QFrame.Sunken)
+        return vline
 
     def _add_marker_list(self):
         self.markerListLayout = QtWidgets.QVBoxLayout()  # marker list layout
