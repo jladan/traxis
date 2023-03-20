@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with traxis.  If not, see <http://www.gnu.org/licenses/>.
 
+""" GuiSkeleton provides the layout for the traxis gui.
+"""
+
 import sys
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -61,6 +64,16 @@ class GuiSkeleton(QtWidgets.QWidget):
         # don't focus on this widget when clicked
         self.markerList.setFocusPolicy(QtCore.Qt.NoFocus)
         self.markerList.setFixedWidth(100)
+
+        # clear markers button widget
+        self.clearMarkerButton = QtWidgets.QPushButton(self)
+        self.markerListLayout.addWidget(self.clearMarkerButton)
+        # don't focus on this widget when clicked
+        self.clearMarkerButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.clearMarkerButton.setText("Clear Markers")
+        self.clearMarkerButton.setToolTip(
+            "Clear all the selected points and calculated values")
+        # self.clearMarkerButton.setShortcut(QtGui.QKeySequence("C"))
 
         # first vertical GUI segment divider in top portion layout
         self.vLineDiv1 = QtWidgets.QFrame(self)  # vertical divider widget
