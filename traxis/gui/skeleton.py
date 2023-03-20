@@ -91,6 +91,12 @@ class GuiSkeleton(QtWidgets.QWidget):
         vline.setFrameShadow(QtWidgets.QFrame.Sunken)
         return vline
 
+    def _add_widgets(self, layout, widgets):
+        """ Add each widget in the list to the layout
+        """
+        for w in widgets:
+            layout.addWidget(w)
+
     def _create_marker_list(self):
         """ Create the Marker List layout
         """
@@ -113,9 +119,8 @@ class GuiSkeleton(QtWidgets.QWidget):
             "Clear all the selected points and calculated values")
         # self.clearMarkerButton.setShortcut(QtGui.QKeySequence("C"))
 
-        markerListLayout.addWidget(markerListLabel)
-        markerListLayout.addWidget(self.markerList)
-        markerListLayout.addWidget(self.clearMarkerButton)
+        self._add_widgets(markerListLayout, 
+                          [markerListLabel, self.markerList, self.clearMarkerButton])
         return markerListLayout
 
 
@@ -188,15 +193,16 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.calcAngleButton.setToolTip("Calculate Opening Angle")
         self.calcAngleButton.setShortcut(QtGui.QKeySequence("B"))
 
-        # add stretch to segment to keep widgets together
-        techButtonLayout.addWidget(resetButtonLabel)
-        techButtonLayout.addWidget(self.resetButton)
-        techButtonLayout.addWidget(zoomLabel)
+        self._add_widgets(techButtonLayout,
+                          [ resetButtonLabel, self.resetButton, zoomLabel, ])
         techButtonLayout.addLayout(zoomLayout)
-        techButtonLayout.addWidget(calcLabel)
-        techButtonLayout.addWidget(self.calcMomentumButton)
-        techButtonLayout.addWidget(self.calcDensityButton)
-        techButtonLayout.addWidget(self.calcAngleButton)
+        self._add_widgets(techButtonLayout,
+                          [ calcLabel,
+                            self.calcMomentumButton, 
+                            self.calcDensityButton, 
+                            self.calcAngleButton,
+                           ])
+        # add stretch to segment to keep widgets together
         techButtonLayout.addStretch(0)
         return techButtonLayout
 
