@@ -17,8 +17,10 @@
 
 from PyQt5 import QtGui
 
+# CALIBRATION CONSTANTS
+# ---------------------
 
-# calibration
+# Resolution
 CMPERPX = 0.01188 # the number of cm in the actual bubble chamber corresponding
                   # to each pixel in a bubble chamber image scan
 ERRCMPERPX = 0.00090 # the error on the px to cm conversion
@@ -28,6 +30,10 @@ MAGNETICFIELD = 15.5 # in kG
 
 # speed of light
 C = 0.3 # in giga metres per second
+
+
+# INTERFACE CONFIGURATION
+# -----------------------
 
 # marker colours
 DEFAULTMARKERCOLOR = QtGui.QColor(176, 30, 125)

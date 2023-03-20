@@ -13,10 +13,6 @@ Overall
 - Add module docstrings where appropriate
 - Format docstrings
 
-runtraxis
----------
-- change to if __name__ == "main" style script.
-
 traxis/constants.py
 ------------------
 - Highlight which "constants" can be modified
