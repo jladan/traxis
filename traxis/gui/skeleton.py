@@ -52,6 +52,47 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.topUiLayout.setContentsMargins(0, 0, 0, 0)
 
         # track marker list GUI segment
+        self._add_marker_list()
+
+        # first vertical GUI segment divider in top portion layout
+        self.vLineDiv1 = QtWidgets.QFrame(self)  # vertical divider widget
+        self.topUiLayout.addWidget(self.vLineDiv1)
+        self.vLineDiv1.setFrameShape(QtWidgets.QFrame.VLine)
+        self.vLineDiv1.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        # "technical buttons" panel (reset, zoom, calculations)
+        self._add_technical_buttons()
+
+        # second vertical GUI segment divider in top portion layout
+        self.vLineDiv2 = QtWidgets.QFrame(self)  # vertical divider widget
+        self.topUiLayout.addWidget(self.vLineDiv2)
+        self.vLineDiv2.setFrameShape(QtWidgets.QFrame.VLine)
+        self.vLineDiv2.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        # "user selection" GUI segment
+        self._add_user_selection()
+
+        # third vertical GUI segment divider in top portion layout
+        self.vLineDiv3 = QtWidgets.QFrame(self)  # vertical divider widget
+        self.topUiLayout.addWidget(self.vLineDiv3)
+        self.vLineDiv3.setFrameShape(QtWidgets.QFrame.VLine)
+        self.vLineDiv3.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        # console GUI segment
+        self._add_console()
+
+
+        # horizontal GUI segment divider between top portion and bottom
+        # portion of the GUI
+        self.hLineDiv = QtWidgets.QFrame(self)
+        self.mainLayout.addWidget(self.hLineDiv)
+        self.hLineDiv.setFrameShape(QtWidgets.QFrame.HLine)
+        self.hLineDiv.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        # layout for the bottom portion of the user interface
+        self._add_bottom_ui()
+
+    def _add_marker_list(self):
         self.markerListLayout = QtWidgets.QVBoxLayout()  # marker list layout
         self.topUiLayout.addLayout(self.markerListLayout)
 
@@ -75,12 +116,7 @@ class GuiSkeleton(QtWidgets.QWidget):
             "Clear all the selected points and calculated values")
         # self.clearMarkerButton.setShortcut(QtGui.QKeySequence("C"))
 
-        # first vertical GUI segment divider in top portion layout
-        self.vLineDiv1 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv1)
-        self.vLineDiv1.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv1.setFrameShadow(QtWidgets.QFrame.Sunken)
-
+    def _add_technical_buttons(self):
         # "technical button" GUI segment
         # technical button segment layout
         self.techButtonLayout = QtWidgets.QVBoxLayout()
@@ -159,13 +195,7 @@ class GuiSkeleton(QtWidgets.QWidget):
         # add stretch to segment to keep widgets together
         self.techButtonLayout.addStretch(0)
 
-        # second vertical GUI segment divider in top portion layout
-        self.vLineDiv2 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv2)
-        self.vLineDiv2.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv2.setFrameShadow(QtWidgets.QFrame.Sunken)
-
-        # "user selection" GUI segment
+    def _add_user_selection(self):
         # user seletion segment layout
         self.userSelectionLayout = QtWidgets.QVBoxLayout()
         self.topUiLayout.addLayout(self.userSelectionLayout)
@@ -268,12 +298,7 @@ class GuiSkeleton(QtWidgets.QWidget):
         # add stretch to segment to keep widgets together
         self.userSelectionLayout.addStretch(0)
 
-        # third vertical GUI segment divider in top portion layout
-        self.vLineDiv3 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv3)
-        self.vLineDiv3.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv3.setFrameShadow(QtWidgets.QFrame.Sunken)
-
+    def _add_console(self):
         # console GUI segment
         self.consoleLayout = QtWidgets.QVBoxLayout()  # console segment layout
         self.topUiLayout.addLayout(self.consoleLayout)
@@ -287,14 +312,7 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.consoleLayout.addWidget(self.consoleTextBrowser)
         self.consoleTextBrowser.setMinimumWidth(100)
 
-        # horizontal GUI segment divider between top portion and bottom
-        # portion of the GUI
-        self.hLineDiv = QtWidgets.QFrame(self)
-        self.mainLayout.addWidget(self.hLineDiv)
-        self.hLineDiv.setFrameShape(QtWidgets.QFrame.HLine)
-        self.hLineDiv.setFrameShadow(QtWidgets.QFrame.Sunken)
-
-        # layout for the bottom portion of the user interface
+    def _add_bottom_ui(self):
         self.bottomUiLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.addLayout(self.bottomUiLayout)
 
