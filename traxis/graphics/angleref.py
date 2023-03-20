@@ -59,6 +59,8 @@ class ReferenceLine(object):
         # set a minimum pen width
         if width < 1:
             width = 1
+        # Force integer for Qt5 compatibility
+        width = int(width)
 
         # create a rect for the initial point with the given
         # coordinates and size (set the width and height of the rect to size)
@@ -94,6 +96,7 @@ class ReferenceLine(object):
         # set a minimum pen width
         if width < 1:
             width = 1
+        width = int(width)
 
         # create a rect for the final point with the given
         # coordinates and size (set the width and height of the rect to size)
@@ -137,6 +140,7 @@ class ReferenceLine(object):
         # set a minimum pen width
         if width < 1:
             width = 1
+        width = int(width)
 
         # create a QGraphicsLineItem with the appropriate start and end
         # coordinates
@@ -166,6 +170,7 @@ class ReferenceLine(object):
         # set a minimum pen width
         if width < 1:
             width = 1
+        width = int(width)
 
         # if the initialPoint attribute is not None
         if self.initialPoint:

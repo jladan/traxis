@@ -39,6 +39,7 @@ class TangentLine(QtWidgets.QGraphicsLineItem):
         # set a minimum pen width
         if width < 1:
             width = 1
+        width = int(width)
 
         # create a pen for the tangent line using the tangent colour
         linePen = QtGui.QPen(constants.TANGENTLINECOLOR)
@@ -56,6 +57,7 @@ class TangentLine(QtWidgets.QGraphicsLineItem):
         # set a minimum pen width
         if width < 1:
             width = 1
+        width = int(width)
 
         # create a new pen, starting from the existing pen of the tangent line
         newLinePen = self.pen()
