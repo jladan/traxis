@@ -59,7 +59,8 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.topUiLayout.addWidget(self._make_vline())
 
         # "technical buttons" panel (reset, zoom, calculations)
-        self._add_technical_buttons()
+        techButtonLayout = self._create_technical_buttons()
+        self.topUiLayout.addLayout(techButtonLayout)
 
         # second vertical GUI segment divider in top portion layout
         self.topUiLayout.addWidget(self._make_vline())
@@ -118,18 +119,17 @@ class GuiSkeleton(QtWidgets.QWidget):
         return markerListLayout
 
 
-    def _add_technical_buttons(self):
-        # "technical button" GUI segment
-        # technical button segment layout
-        self.techButtonLayout = QtWidgets.QVBoxLayout()
-        self.topUiLayout.addLayout(self.techButtonLayout)
+    def _create_technical_buttons(self):
+        """ Create the "technical buttons" layout.
 
-        self.resetButtonLabel = QtWidgets.QLabel(self)  # reset button label
-        self.techButtonLayout.addWidget(self.resetButtonLabel)
-        self.resetButtonLabel.setText("Reset Analysis")
+        This includes the reset, zoom, and calculation buttons.
+        """
+        techButtonLayout = QtWidgets.QVBoxLayout()
+
+        resetButtonLabel = QtWidgets.QLabel(self)  # reset button label
+        resetButtonLabel.setText("Reset Analysis")
 
         self.resetButton = QtWidgets.QPushButton(self)  # reset button widget
-        self.techButtonLayout.addWidget(self.resetButton)
         # don't focus on this widget when clicked
         self.resetButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.resetButton.setText("Reset")
@@ -137,17 +137,15 @@ class GuiSkeleton(QtWidgets.QWidget):
             "Reset all the selected points and calculated variables")
         self.resetButton.setShortcut(QtGui.QKeySequence("R"))
 
-        self.zoomLabel = QtWidgets.QLabel(self)  # zoom label
-        self.techButtonLayout.addWidget(self.zoomLabel)
-        self.zoomLabel.setText("Zoom")
+        zoomLabel = QtWidgets.QLabel(self)  # zoom label
+        zoomLabel.setText("Zoom")
 
         # horizontal layout for zoom buttons
-        self.zoomLayout = QtWidgets.QHBoxLayout()
-        self.techButtonLayout.addLayout(self.zoomLayout)
+        zoomLayout = QtWidgets.QHBoxLayout()
 
         # zoom in button widget
         self.zoomInButton = QtWidgets.QPushButton(self)
-        self.zoomLayout.addWidget(self.zoomInButton)
+        zoomLayout.addWidget(self.zoomInButton)
         # don't focus on this widget when clicked
         self.zoomInButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.zoomInButton.setText("Zoom In")
@@ -156,20 +154,18 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # zoom out button widget
         self.zoomOutButton = QtWidgets.QPushButton(self)
-        self.zoomLayout.addWidget(self.zoomOutButton)
+        zoomLayout.addWidget(self.zoomOutButton)
         self.zoomOutButton.setFocusPolicy(QtCore.Qt.NoFocus)
         # don't focus on this widget when clicked
         self.zoomOutButton.setText("Zoom Out")
         self.zoomOutButton.setToolTip("Zoom out from the picture")
         self.zoomOutButton.setShortcut(QtGui.QKeySequence("X"))
 
-        self.calcLabel = QtWidgets.QLabel(self)  # calculate label
-        self.techButtonLayout.addWidget(self.calcLabel)
-        self.calcLabel.setText("Calculate")
+        calcLabel = QtWidgets.QLabel(self)  # calculate label
+        calcLabel.setText("Calculate")
 
         # calculate momentum button widget
         self.calcMomentumButton = QtWidgets.QPushButton(self)
-        self.techButtonLayout.addWidget(self.calcMomentumButton)
         # don't focus on this widget when clicked
         self.calcMomentumButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.calcMomentumButton.setText("Calculate Track Momentum")
@@ -178,7 +174,6 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # calculate optical density button widget
         self.calcDensityButton = QtWidgets.QPushButton(self)
-        self.techButtonLayout.addWidget(self.calcDensityButton)
         # don't focus on this widget when clicked
         self.calcDensityButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.calcDensityButton.setText("Calculate Optical Density")
@@ -187,7 +182,6 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # calculate angle button widget
         self.calcAngleButton = QtWidgets.QPushButton(self)
-        self.techButtonLayout.addWidget(self.calcAngleButton)
         # don't focus on this widget when clicked
         self.calcAngleButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.calcAngleButton.setText("Calculate Angle")
@@ -195,7 +189,16 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.calcAngleButton.setShortcut(QtGui.QKeySequence("B"))
 
         # add stretch to segment to keep widgets together
-        self.techButtonLayout.addStretch(0)
+        techButtonLayout.addWidget(resetButtonLabel)
+        techButtonLayout.addWidget(self.resetButton)
+        techButtonLayout.addWidget(zoomLabel)
+        techButtonLayout.addLayout(zoomLayout)
+        techButtonLayout.addWidget(calcLabel)
+        techButtonLayout.addWidget(self.calcMomentumButton)
+        techButtonLayout.addWidget(self.calcDensityButton)
+        techButtonLayout.addWidget(self.calcAngleButton)
+        techButtonLayout.addStretch(0)
+        return techButtonLayout
 
     def _add_user_selection(self):
         # user seletion segment layout
