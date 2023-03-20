@@ -66,7 +66,8 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.topUiLayout.addWidget(self._make_vline())
 
         # "user selection" GUI segment
-        self._add_user_selection()
+        userSelectionLayout = self._create_user_selection()
+        self.topUiLayout.addLayout(userSelectionLayout)
 
         # third vertical GUI segment divider in top portion layout
         self.topUiLayout.addWidget(self._make_vline())
@@ -96,6 +97,12 @@ class GuiSkeleton(QtWidgets.QWidget):
         """
         for w in widgets:
             layout.addWidget(w)
+
+    def _add_layouts(self, layout, layouts):
+        """ Add each layouts in the list to the layout
+        """
+        for l in layouts:
+            layout.addLayout(l)
 
     def _create_marker_list(self):
         """ Create the Marker List layout
@@ -150,7 +157,6 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # zoom in button widget
         self.zoomInButton = QtWidgets.QPushButton(self)
-        zoomLayout.addWidget(self.zoomInButton)
         # don't focus on this widget when clicked
         self.zoomInButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.zoomInButton.setText("Zoom In")
@@ -159,12 +165,14 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # zoom out button widget
         self.zoomOutButton = QtWidgets.QPushButton(self)
-        zoomLayout.addWidget(self.zoomOutButton)
         self.zoomOutButton.setFocusPolicy(QtCore.Qt.NoFocus)
         # don't focus on this widget when clicked
         self.zoomOutButton.setText("Zoom Out")
         self.zoomOutButton.setToolTip("Zoom out from the picture")
         self.zoomOutButton.setShortcut(QtGui.QKeySequence("X"))
+
+        zoomLayout.addWidget(self.zoomInButton)
+        zoomLayout.addWidget(self.zoomOutButton)
 
         calcLabel = QtWidgets.QLabel(self)  # calculate label
         calcLabel.setText("Calculate")
@@ -206,18 +214,15 @@ class GuiSkeleton(QtWidgets.QWidget):
         techButtonLayout.addStretch(0)
         return techButtonLayout
 
-    def _add_user_selection(self):
+    def _create_user_selection(self):
         # user seletion segment layout
-        self.userSelectionLayout = QtWidgets.QVBoxLayout()
-        self.topUiLayout.addLayout(self.userSelectionLayout)
+        userSelectionLayout = QtWidgets.QVBoxLayout()
 
-        self.openSaveLabel = QtWidgets.QLabel(self)  # open/save label
-        self.userSelectionLayout.addWidget(self.openSaveLabel)
-        self.openSaveLabel.setText("Open/Save")
+        openSaveLabel = QtWidgets.QLabel(self)  # open/save label
+        openSaveLabel.setText("Open/Save")
 
         self.openImageButton = QtWidgets.QPushButton(
             self)  # open image button widget
-        self.userSelectionLayout.addWidget(self.openImageButton)
         # don't focus on this widget when clicked
         self.openImageButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.openImageButton.setText("Open Image")
@@ -225,12 +230,10 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.openImageButton.setShortcut(QtGui.QKeySequence("O"))
 
         # horizontal layout for save and load buttons
-        self.saveLayout = QtWidgets.QHBoxLayout()
-        self.userSelectionLayout.addLayout(self.saveLayout)
+        saveLayout = QtWidgets.QHBoxLayout()
 
         # save session button widget
         self.saveSessionButton = QtWidgets.QPushButton(self)
-        self.saveLayout.addWidget(self.saveSessionButton)
         # don't focus on this widget when clicked
         self.saveSessionButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.saveSessionButton.setText("Save")
@@ -238,7 +241,6 @@ class GuiSkeleton(QtWidgets.QWidget):
         
         # load session button widget
         self.loadSessionButton = QtWidgets.QPushButton(self)
-        self.saveLayout.addWidget(self.loadSessionButton)
         # don't focus on this widget when clicked
         self.loadSessionButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.loadSessionButton.setText("Load")
@@ -247,20 +249,17 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # screenshot button widget
         self.screenshotButton = QtWidgets.QPushButton(self)
-        self.userSelectionLayout.addWidget(self.screenshotButton)
         # don't focus on this widget when clicked
         self.screenshotButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.screenshotButton.setText("Save Screenshot")
         self.screenshotButton.setToolTip(
             "Take a screenshot of the scroll area contents and save to image")
 
-        self.modeLabel = QtWidgets.QLabel(self) # mode label
-        self.userSelectionLayout.addWidget(self.modeLabel)
-        self.modeLabel.setText("Mode")
+        modeLabel = QtWidgets.QLabel(self) # mode label
+        modeLabel.setText("Mode")
 
         # place marker mode button widget
         self.placeMarkerButton = QtWidgets.QPushButton(self)
-        self.userSelectionLayout.addWidget(self.placeMarkerButton)
         # make the button checkable (i.e. stays depressed when clicked)
         self.placeMarkerButton.setCheckable(True)
         # don't focus on this widget when clicked
@@ -272,7 +271,6 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # draw angle reference mode button widget
         self.drawRefButton = QtWidgets.QPushButton(self)
-        self.userSelectionLayout.addWidget(self.drawRefButton)
         # make the button checkable (i.e. stays depressed when clicked)
         self.drawRefButton.setCheckable(True)
         # don't focus on this widget when clicked
@@ -283,21 +281,20 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.drawRefButton.setShortcut("L")
 
         # dl form layout
-        self.dlFormLayout = QtWidgets.QFormLayout()
-        self.userSelectionLayout.addLayout(self.dlFormLayout)
+        dlFormLayout = QtWidgets.QFormLayout()
 
         # dl label
-        self.dlLabel = QtWidgets.QLabel(self)
-        self.dlFormLayout.setWidget(
-            0, QtWidgets.QFormLayout.LabelRole, self.dlLabel)
-        self.dlLabel.setText("Set dL")
+        dlLabel = QtWidgets.QLabel(self)
+        dlFormLayout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, dlLabel)
+        dlLabel.setText("Set dL")
 
         # dl text box (line edit) widget
         self.dlLineEdit = QtWidgets.QLineEdit(self)
         # fix the size of the text box
         self.dlLineEdit.setSizePolicy(
             QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        self.dlFormLayout.setWidget(
+        dlFormLayout.setWidget(
             0, QtWidgets.QFormLayout.FieldRole, self.dlLineEdit)
         # set the dL value to 0 by default
         self.dlLineEdit.setText("0")
@@ -306,8 +303,21 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.dlLineEdit.setValidator(
             QtGui.QRegExpValidator(QtCore.QRegExp('[0-9]+\.?[0-9]*')))
 
+        # Add all the widgets and layout
+        saveLayout.addWidget(self.saveSessionButton)
+        saveLayout.addWidget(self.loadSessionButton)
+        userSelectionLayout.addWidget(openSaveLabel)
+        userSelectionLayout.addWidget(self.openImageButton)
+        userSelectionLayout.addLayout(saveLayout)
+        self._add_widgets(userSelectionLayout,
+                          [ self.screenshotButton, 
+                            modeLabel, 
+                            self.placeMarkerButton, 
+                            self.drawRefButton, ])
+        userSelectionLayout.addLayout(dlFormLayout)
         # add stretch to segment to keep widgets together
-        self.userSelectionLayout.addStretch(0)
+        userSelectionLayout.addStretch(0)
+        return userSelectionLayout
 
     def _add_console(self):
         # console GUI segment
