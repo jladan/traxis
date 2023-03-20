@@ -52,7 +52,8 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.topUiLayout.setContentsMargins(0, 0, 0, 0)
 
         # track marker list GUI segment
-        self._add_marker_list()
+        markerListLayout = self._create_marker_list()
+        self.topUiLayout.addLayout(markerListLayout)
 
         # first vertical GUI segment divider in top portion layout
         self.topUiLayout.addWidget(self._make_vline())
@@ -89,29 +90,33 @@ class GuiSkeleton(QtWidgets.QWidget):
         vline.setFrameShadow(QtWidgets.QFrame.Sunken)
         return vline
 
-    def _add_marker_list(self):
-        self.markerListLayout = QtWidgets.QVBoxLayout()  # marker list layout
-        self.topUiLayout.addLayout(self.markerListLayout)
+    def _create_marker_list(self):
+        """ Create the Marker List layout
+        """
+        markerListLayout = QtWidgets.QVBoxLayout()  # marker list layout
 
-        self.markerListLabel = QtWidgets.QLabel(self)  # marker list label
-        self.markerListLayout.addWidget(self.markerListLabel)
-        self.markerListLabel.setText("Track Markers")
+        markerListLabel = QtWidgets.QLabel(self)  # marker list label
+        markerListLabel.setText("Track Markers")
 
         self.markerList = markers.MarkerList(self)  # marker list widget
-        self.markerListLayout.addWidget(self.markerList)
+        self.markerList.setFixedWidth(markerListLabel.width()*2)
         # don't focus on this widget when clicked
         self.markerList.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.markerList.setFixedWidth(self.markerListLabel.width()*2)
 
         # clear markers button widget
         self.clearMarkerButton = QtWidgets.QPushButton(self)
-        self.markerListLayout.addWidget(self.clearMarkerButton)
         # don't focus on this widget when clicked
         self.clearMarkerButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.clearMarkerButton.setText("Clear Markers")
         self.clearMarkerButton.setToolTip(
             "Clear all the selected points and calculated values")
         # self.clearMarkerButton.setShortcut(QtGui.QKeySequence("C"))
+
+        markerListLayout.addWidget(markerListLabel)
+        markerListLayout.addWidget(self.markerList)
+        markerListLayout.addWidget(self.clearMarkerButton)
+        return markerListLayout
+
 
     def _add_technical_buttons(self):
         # "technical button" GUI segment
