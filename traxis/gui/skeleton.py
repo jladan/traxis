@@ -63,7 +63,7 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.markerListLayout.addWidget(self.markerList)
         # don't focus on this widget when clicked
         self.markerList.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.markerList.setFixedWidth(100)
+        self.markerList.setFixedWidth(self.markerListLabel.width()*2)
 
         # clear markers button widget
         self.clearMarkerButton = QtWidgets.QPushButton(self)
@@ -286,16 +286,6 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.consoleTextBrowser = QtWidgets.QTextBrowser(self)
         self.consoleLayout.addWidget(self.consoleTextBrowser)
         self.consoleTextBrowser.setMinimumWidth(100)
-
-        # determine the height of the "user selection" GUI segment (the
-        # tallest segment in the top portion of the GUI)
-        userSelectionHeight = \
-            self.userSelectionLayout.minimumSize().height() - \
-            self.openSaveLabel.height()
-        # fix the height of the marker list and console to the "user selection"
-        # GUI segment height
-        self.markerList.setFixedHeight(userSelectionHeight)
-        self.consoleTextBrowser.setFixedHeight(userSelectionHeight)
 
         # horizontal GUI segment divider between top portion and bottom
         # portion of the GUI
