@@ -57,35 +57,37 @@ class GuiSkeleton(QtWidgets.QWidget):
         techButtonLayout = self._create_technical_buttons()
         # "user selection" GUI segment
         userSelectionLayout = self._create_user_selection()
-
-        self._add_items(self.topUiLayout,
-                        [ markerListLayout, 
-                          self._make_vline(), 
-                          techButtonLayout, 
-                          self._make_vline(), 
-                          userSelectionLayout, 
-                          self._make_vline(),
-                         ])
-
         # console GUI segment
-        self._add_console()
+        consoleLayout = self._create_console()
 
-
-        # horizontal GUI segment divider between top portion and bottom
-        # portion of the GUI
-        self.hLineDiv = QtWidgets.QFrame(self)
-        self.mainLayout.addWidget(self.hLineDiv)
-        self.hLineDiv.setFrameShape(QtWidgets.QFrame.HLine)
-        self.hLineDiv.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # Bottom portion of UI with the actual image and graphics
+        bottomUiLayout = self._create_bottom_ui()
 
         # layout for the bottom portion of the user interface
-        self._add_bottom_ui()
+        self._add_items(self.topUiLayout,
+                        [markerListLayout, 
+                         self._make_vline(), 
+                         techButtonLayout, 
+                         self._make_vline(), 
+                         userSelectionLayout, 
+                         self._make_vline(),
+                         consoleLayout,
+                         ])
+        self.mainLayout.addWidget(self._make_hline()) # horizontal line
+        self.mainLayout.addLayout(bottomUiLayout)
+
 
     def _make_vline(self):
         vline = QtWidgets.QFrame(self)  # vertical divider widget
         vline.setFrameShape(QtWidgets.QFrame.VLine)
         vline.setFrameShadow(QtWidgets.QFrame.Sunken)
         return vline
+
+    def _make_hline(self):
+        hline = QtWidgets.QFrame(self)  # vertical divider widget
+        hline.setFrameShape(QtWidgets.QFrame.HLine)
+        hline.setFrameShadow(QtWidgets.QFrame.Sunken)
+        return hline
 
     def _add_items(self, layout, items):
         """ Add each widget or layout in items to the layout
@@ -312,23 +314,24 @@ class GuiSkeleton(QtWidgets.QWidget):
         userSelectionLayout.addStretch(0)
         return userSelectionLayout
 
-    def _add_console(self):
+    def _create_console(self):
         # console GUI segment
-        self.consoleLayout = QtWidgets.QVBoxLayout()  # console segment layout
-        self.topUiLayout.addLayout(self.consoleLayout)
+        consoleLayout = QtWidgets.QVBoxLayout()  # console segment layout
 
-        self.consoleLabel = QtWidgets.QLabel(self)  # console label
-        self.consoleLayout.addWidget(self.consoleLabel)
-        self.consoleLabel.setText("Console")
+        consoleLabel = QtWidgets.QLabel(self)  # console label
+        consoleLabel.setText("Console")
 
         # console text browser widget
         self.consoleTextBrowser = QtWidgets.QTextBrowser(self)
-        self.consoleLayout.addWidget(self.consoleTextBrowser)
         self.consoleTextBrowser.setMinimumWidth(100)
 
-    def _add_bottom_ui(self):
-        self.bottomUiLayout = QtWidgets.QHBoxLayout()
-        self.mainLayout.addLayout(self.bottomUiLayout)
+        # Add widgets to layout
+        consoleLayout.addWidget(self.consoleTextBrowser)
+        consoleLayout.addWidget(consoleLabel)
+        return consoleLayout
+
+    def _create_bottom_ui(self):
+        bottomUiLayout = QtWidgets.QHBoxLayout()
 
         # create a graphics scene on which images and all graphics will be
         # displayed
@@ -336,7 +339,6 @@ class GuiSkeleton(QtWidgets.QWidget):
         # the graphics view is the widget that actually displays the contents
         # of the graphics scene
         self.sceneView = QtWidgets.QGraphicsView(self.scene, self)
-        self.bottomUiLayout.addWidget(self.sceneView)
         # set a minimum size for the scene view
         self.sceneView.setMinimumWidth(900)
         self.sceneView.setMinimumHeight(400)
@@ -353,3 +355,6 @@ class GuiSkeleton(QtWidgets.QWidget):
         # set the tangentLine attribute to None initially so that there is
         # something to check for when a tangent has not been drawn yet
         self.tangentLine = None
+
+        bottomUiLayout.addWidget(self.sceneView)
+        return bottomUiLayout
