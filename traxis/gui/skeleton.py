@@ -52,22 +52,70 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.topUiLayout.setContentsMargins(0, 0, 0, 0)
 
         # track marker list GUI segment
-        self.markerListLayout = QtWidgets.QVBoxLayout()  # marker list layout
-        self.topUiLayout.addLayout(self.markerListLayout)
+        markerListLayout = self._create_marker_list()
+        # "technical buttons" panel (reset, zoom, calculations)
+        techButtonLayout = self._create_technical_buttons()
+        # "user selection" GUI segment
+        userSelectionLayout = self._create_user_selection()
+        # console GUI segment
+        consoleLayout = self._create_console()
 
-        self.markerListLabel = QtWidgets.QLabel(self)  # marker list label
-        self.markerListLayout.addWidget(self.markerListLabel)
-        self.markerListLabel.setText("Track Markers")
+        # Bottom portion of UI with the actual image and graphics
+        bottomUiLayout = self._create_bottom_ui()
+
+        # layout for the bottom portion of the user interface
+        self._add_items(self.topUiLayout,
+                        [markerListLayout, 
+                         self._make_vline(), 
+                         techButtonLayout, 
+                         self._make_vline(), 
+                         userSelectionLayout, 
+                         self._make_vline(),
+                         consoleLayout,
+                         ])
+        self.mainLayout.addWidget(self._make_hline()) # horizontal line
+        self.mainLayout.addLayout(bottomUiLayout)
+
+
+    def _make_vline(self):
+        vline = QtWidgets.QFrame(self)  # vertical divider widget
+        vline.setFrameShape(QtWidgets.QFrame.VLine)
+        vline.setFrameShadow(QtWidgets.QFrame.Sunken)
+        return vline
+
+    def _make_hline(self):
+        hline = QtWidgets.QFrame(self)  # vertical divider widget
+        hline.setFrameShape(QtWidgets.QFrame.HLine)
+        hline.setFrameShadow(QtWidgets.QFrame.Sunken)
+        return hline
+
+    def _add_items(self, layout, items):
+        """ Add each widget or layout in items to the layout
+        """
+        for w in items:
+            if isinstance(w, QtWidgets.QWidget):
+                layout.addWidget(w)
+            elif isinstance(w, QtWidgets.QLayout):
+                layout.addLayout(w)
+            else:
+                raise TypeError("Expected QWidget or QLayout to add to interface")
+
+    def _create_marker_list(self):
+        """ Create the Marker List layout
+        """
+        markerListLayout = QtWidgets.QVBoxLayout()  # marker list layout
+
+        markerListLabel = QtWidgets.QLabel(self)  # marker list label
+        markerListLabel.setText("Track Markers")
 
         self.markerList = markers.MarkerList(self)  # marker list widget
-        self.markerListLayout.addWidget(self.markerList)
+        self.markerList.setMinimumWidth(100)
+        self.markerList.setMaximumWidth(markerListLabel.width()*2)
         # don't focus on this widget when clicked
         self.markerList.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.markerList.setFixedWidth(self.markerListLabel.width()*2)
 
         # clear markers button widget
         self.clearMarkerButton = QtWidgets.QPushButton(self)
-        self.markerListLayout.addWidget(self.clearMarkerButton)
         # don't focus on this widget when clicked
         self.clearMarkerButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.clearMarkerButton.setText("Clear Markers")
@@ -75,23 +123,22 @@ class GuiSkeleton(QtWidgets.QWidget):
             "Clear all the selected points and calculated values")
         # self.clearMarkerButton.setShortcut(QtGui.QKeySequence("C"))
 
-        # first vertical GUI segment divider in top portion layout
-        self.vLineDiv1 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv1)
-        self.vLineDiv1.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv1.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self._add_items(markerListLayout, 
+                          [markerListLabel, self.markerList, self.clearMarkerButton])
+        return markerListLayout
 
-        # "technical button" GUI segment
-        # technical button segment layout
-        self.techButtonLayout = QtWidgets.QVBoxLayout()
-        self.topUiLayout.addLayout(self.techButtonLayout)
 
-        self.resetButtonLabel = QtWidgets.QLabel(self)  # reset button label
-        self.techButtonLayout.addWidget(self.resetButtonLabel)
-        self.resetButtonLabel.setText("Reset Analysis")
+    def _create_technical_buttons(self):
+        """ Create the "technical buttons" layout.
+
+        This includes the reset, zoom, and calculation buttons.
+        """
+        techButtonLayout = QtWidgets.QVBoxLayout()
+
+        resetButtonLabel = QtWidgets.QLabel(self)  # reset button label
+        resetButtonLabel.setText("Reset Analysis")
 
         self.resetButton = QtWidgets.QPushButton(self)  # reset button widget
-        self.techButtonLayout.addWidget(self.resetButton)
         # don't focus on this widget when clicked
         self.resetButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.resetButton.setText("Reset")
@@ -99,17 +146,14 @@ class GuiSkeleton(QtWidgets.QWidget):
             "Reset all the selected points and calculated variables")
         self.resetButton.setShortcut(QtGui.QKeySequence("R"))
 
-        self.zoomLabel = QtWidgets.QLabel(self)  # zoom label
-        self.techButtonLayout.addWidget(self.zoomLabel)
-        self.zoomLabel.setText("Zoom")
+        zoomLabel = QtWidgets.QLabel(self)  # zoom label
+        zoomLabel.setText("Zoom")
 
         # horizontal layout for zoom buttons
-        self.zoomLayout = QtWidgets.QHBoxLayout()
-        self.techButtonLayout.addLayout(self.zoomLayout)
+        zoomLayout = QtWidgets.QHBoxLayout()
 
         # zoom in button widget
         self.zoomInButton = QtWidgets.QPushButton(self)
-        self.zoomLayout.addWidget(self.zoomInButton)
         # don't focus on this widget when clicked
         self.zoomInButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.zoomInButton.setText("Zoom In")
@@ -118,20 +162,20 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # zoom out button widget
         self.zoomOutButton = QtWidgets.QPushButton(self)
-        self.zoomLayout.addWidget(self.zoomOutButton)
         self.zoomOutButton.setFocusPolicy(QtCore.Qt.NoFocus)
         # don't focus on this widget when clicked
         self.zoomOutButton.setText("Zoom Out")
         self.zoomOutButton.setToolTip("Zoom out from the picture")
         self.zoomOutButton.setShortcut(QtGui.QKeySequence("X"))
 
-        self.calcLabel = QtWidgets.QLabel(self)  # calculate label
-        self.techButtonLayout.addWidget(self.calcLabel)
-        self.calcLabel.setText("Calculate")
+        zoomLayout.addWidget(self.zoomInButton)
+        zoomLayout.addWidget(self.zoomOutButton)
+
+        calcLabel = QtWidgets.QLabel(self)  # calculate label
+        calcLabel.setText("Calculate")
 
         # calculate momentum button widget
         self.calcMomentumButton = QtWidgets.QPushButton(self)
-        self.techButtonLayout.addWidget(self.calcMomentumButton)
         # don't focus on this widget when clicked
         self.calcMomentumButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.calcMomentumButton.setText("Calculate Track Momentum")
@@ -140,7 +184,6 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # calculate optical density button widget
         self.calcDensityButton = QtWidgets.QPushButton(self)
-        self.techButtonLayout.addWidget(self.calcDensityButton)
         # don't focus on this widget when clicked
         self.calcDensityButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.calcDensityButton.setText("Calculate Optical Density")
@@ -149,34 +192,35 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # calculate angle button widget
         self.calcAngleButton = QtWidgets.QPushButton(self)
-        self.techButtonLayout.addWidget(self.calcAngleButton)
         # don't focus on this widget when clicked
         self.calcAngleButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.calcAngleButton.setText("Calculate Angle")
         self.calcAngleButton.setToolTip("Calculate Opening Angle")
         self.calcAngleButton.setShortcut(QtGui.QKeySequence("B"))
 
+        self._add_items(techButtonLayout,
+                          [resetButtonLabel, 
+                           self.resetButton, 
+                           zoomLabel,
+                           zoomLayout,
+                           calcLabel,
+                           self.calcMomentumButton, 
+                           self.calcDensityButton, 
+                           self.calcAngleButton,
+                           ])
         # add stretch to segment to keep widgets together
-        self.techButtonLayout.addStretch(0)
+        techButtonLayout.addStretch(0)
+        return techButtonLayout
 
-        # second vertical GUI segment divider in top portion layout
-        self.vLineDiv2 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv2)
-        self.vLineDiv2.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv2.setFrameShadow(QtWidgets.QFrame.Sunken)
-
-        # "user selection" GUI segment
+    def _create_user_selection(self):
         # user seletion segment layout
-        self.userSelectionLayout = QtWidgets.QVBoxLayout()
-        self.topUiLayout.addLayout(self.userSelectionLayout)
+        userSelectionLayout = QtWidgets.QVBoxLayout()
 
-        self.openSaveLabel = QtWidgets.QLabel(self)  # open/save label
-        self.userSelectionLayout.addWidget(self.openSaveLabel)
-        self.openSaveLabel.setText("Open/Save")
+        openSaveLabel = QtWidgets.QLabel(self)  # open/save label
+        openSaveLabel.setText("Open/Save")
 
         self.openImageButton = QtWidgets.QPushButton(
             self)  # open image button widget
-        self.userSelectionLayout.addWidget(self.openImageButton)
         # don't focus on this widget when clicked
         self.openImageButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.openImageButton.setText("Open Image")
@@ -184,12 +228,10 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.openImageButton.setShortcut(QtGui.QKeySequence("O"))
 
         # horizontal layout for save and load buttons
-        self.saveLayout = QtWidgets.QHBoxLayout()
-        self.userSelectionLayout.addLayout(self.saveLayout)
+        saveLayout = QtWidgets.QHBoxLayout()
 
         # save session button widget
         self.saveSessionButton = QtWidgets.QPushButton(self)
-        self.saveLayout.addWidget(self.saveSessionButton)
         # don't focus on this widget when clicked
         self.saveSessionButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.saveSessionButton.setText("Save")
@@ -197,7 +239,6 @@ class GuiSkeleton(QtWidgets.QWidget):
         
         # load session button widget
         self.loadSessionButton = QtWidgets.QPushButton(self)
-        self.saveLayout.addWidget(self.loadSessionButton)
         # don't focus on this widget when clicked
         self.loadSessionButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.loadSessionButton.setText("Load")
@@ -206,20 +247,17 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # screenshot button widget
         self.screenshotButton = QtWidgets.QPushButton(self)
-        self.userSelectionLayout.addWidget(self.screenshotButton)
         # don't focus on this widget when clicked
         self.screenshotButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.screenshotButton.setText("Save Screenshot")
         self.screenshotButton.setToolTip(
             "Take a screenshot of the scroll area contents and save to image")
 
-        self.modeLabel = QtWidgets.QLabel(self) # mode label
-        self.userSelectionLayout.addWidget(self.modeLabel)
-        self.modeLabel.setText("Mode")
+        modeLabel = QtWidgets.QLabel(self) # mode label
+        modeLabel.setText("Mode")
 
         # place marker mode button widget
         self.placeMarkerButton = QtWidgets.QPushButton(self)
-        self.userSelectionLayout.addWidget(self.placeMarkerButton)
         # make the button checkable (i.e. stays depressed when clicked)
         self.placeMarkerButton.setCheckable(True)
         # don't focus on this widget when clicked
@@ -231,7 +269,6 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # draw angle reference mode button widget
         self.drawRefButton = QtWidgets.QPushButton(self)
-        self.userSelectionLayout.addWidget(self.drawRefButton)
         # make the button checkable (i.e. stays depressed when clicked)
         self.drawRefButton.setCheckable(True)
         # don't focus on this widget when clicked
@@ -242,21 +279,20 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.drawRefButton.setShortcut("L")
 
         # dl form layout
-        self.dlFormLayout = QtWidgets.QFormLayout()
-        self.userSelectionLayout.addLayout(self.dlFormLayout)
+        dlFormLayout = QtWidgets.QFormLayout()
 
         # dl label
-        self.dlLabel = QtWidgets.QLabel(self)
-        self.dlFormLayout.setWidget(
-            0, QtWidgets.QFormLayout.LabelRole, self.dlLabel)
-        self.dlLabel.setText("Set dL")
+        dlLabel = QtWidgets.QLabel(self)
+        dlFormLayout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, dlLabel)
+        dlLabel.setText("Set dL")
 
         # dl text box (line edit) widget
         self.dlLineEdit = QtWidgets.QLineEdit(self)
         # fix the size of the text box
         self.dlLineEdit.setSizePolicy(
             QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        self.dlFormLayout.setWidget(
+        dlFormLayout.setWidget(
             0, QtWidgets.QFormLayout.FieldRole, self.dlLineEdit)
         # set the dL value to 0 by default
         self.dlLineEdit.setText("0")
@@ -265,38 +301,38 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.dlLineEdit.setValidator(
             QtGui.QRegExpValidator(QtCore.QRegExp('[0-9]+\.?[0-9]*')))
 
+        # Add all the widgets and layout
+        saveLayout.addWidget(self.saveSessionButton)
+        saveLayout.addWidget(self.loadSessionButton)
+        self._add_items(userSelectionLayout,
+                        [openSaveLabel, self.openImageButton, saveLayout,
+                         self.screenshotButton, 
+                         modeLabel, 
+                         self.placeMarkerButton, 
+                         self.drawRefButton, 
+                         dlFormLayout, ])
         # add stretch to segment to keep widgets together
-        self.userSelectionLayout.addStretch(0)
+        userSelectionLayout.addStretch(0)
+        return userSelectionLayout
 
-        # third vertical GUI segment divider in top portion layout
-        self.vLineDiv3 = QtWidgets.QFrame(self)  # vertical divider widget
-        self.topUiLayout.addWidget(self.vLineDiv3)
-        self.vLineDiv3.setFrameShape(QtWidgets.QFrame.VLine)
-        self.vLineDiv3.setFrameShadow(QtWidgets.QFrame.Sunken)
-
+    def _create_console(self):
         # console GUI segment
-        self.consoleLayout = QtWidgets.QVBoxLayout()  # console segment layout
-        self.topUiLayout.addLayout(self.consoleLayout)
+        consoleLayout = QtWidgets.QVBoxLayout()  # console segment layout
 
-        self.consoleLabel = QtWidgets.QLabel(self)  # console label
-        self.consoleLayout.addWidget(self.consoleLabel)
-        self.consoleLabel.setText("Console")
+        consoleLabel = QtWidgets.QLabel(self)  # console label
+        consoleLabel.setText("Console")
 
         # console text browser widget
         self.consoleTextBrowser = QtWidgets.QTextBrowser(self)
-        self.consoleLayout.addWidget(self.consoleTextBrowser)
         self.consoleTextBrowser.setMinimumWidth(100)
 
-        # horizontal GUI segment divider between top portion and bottom
-        # portion of the GUI
-        self.hLineDiv = QtWidgets.QFrame(self)
-        self.mainLayout.addWidget(self.hLineDiv)
-        self.hLineDiv.setFrameShape(QtWidgets.QFrame.HLine)
-        self.hLineDiv.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # Add widgets to layout
+        consoleLayout.addWidget(self.consoleTextBrowser)
+        consoleLayout.addWidget(consoleLabel)
+        return consoleLayout
 
-        # layout for the bottom portion of the user interface
-        self.bottomUiLayout = QtWidgets.QHBoxLayout()
-        self.mainLayout.addLayout(self.bottomUiLayout)
+    def _create_bottom_ui(self):
+        bottomUiLayout = QtWidgets.QHBoxLayout()
 
         # create a graphics scene on which images and all graphics will be
         # displayed
@@ -304,7 +340,6 @@ class GuiSkeleton(QtWidgets.QWidget):
         # the graphics view is the widget that actually displays the contents
         # of the graphics scene
         self.sceneView = QtWidgets.QGraphicsView(self.scene, self)
-        self.bottomUiLayout.addWidget(self.sceneView)
         # set a minimum size for the scene view
         self.sceneView.setMinimumWidth(900)
         self.sceneView.setMinimumHeight(400)
@@ -321,3 +356,6 @@ class GuiSkeleton(QtWidgets.QWidget):
         # set the tangentLine attribute to None initially so that there is
         # something to check for when a tangent has not been drawn yet
         self.tangentLine = None
+
+        bottomUiLayout.addWidget(self.sceneView)
+        return bottomUiLayout
