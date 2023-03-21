@@ -109,7 +109,8 @@ class GuiSkeleton(QtWidgets.QWidget):
         markerListLabel.setText("Track Markers")
 
         self.markerList = markers.MarkerList(self)  # marker list widget
-        self.markerList.setFixedWidth(markerListLabel.width()*2)
+        self.markerList.setMinimumWidth(100)
+        self.markerList.setMaximumWidth(markerListLabel.width()*2)
         # don't focus on this widget when clicked
         self.markerList.setFocusPolicy(QtCore.Qt.NoFocus)
 
