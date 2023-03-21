@@ -53,24 +53,19 @@ class GuiSkeleton(QtWidgets.QWidget):
 
         # track marker list GUI segment
         markerListLayout = self._create_marker_list()
-        self.topUiLayout.addLayout(markerListLayout)
-
-        # first vertical GUI segment divider in top portion layout
-        self.topUiLayout.addWidget(self._make_vline())
-
         # "technical buttons" panel (reset, zoom, calculations)
         techButtonLayout = self._create_technical_buttons()
-        self.topUiLayout.addLayout(techButtonLayout)
-
-        # second vertical GUI segment divider in top portion layout
-        self.topUiLayout.addWidget(self._make_vline())
-
         # "user selection" GUI segment
         userSelectionLayout = self._create_user_selection()
-        self.topUiLayout.addLayout(userSelectionLayout)
 
-        # third vertical GUI segment divider in top portion layout
-        self.topUiLayout.addWidget(self._make_vline())
+        self._add_items(self.topUiLayout,
+                        [ markerListLayout, 
+                          self._make_vline(), 
+                          techButtonLayout, 
+                          self._make_vline(), 
+                          userSelectionLayout, 
+                          self._make_vline(),
+                         ])
 
         # console GUI segment
         self._add_console()
@@ -92,17 +87,16 @@ class GuiSkeleton(QtWidgets.QWidget):
         vline.setFrameShadow(QtWidgets.QFrame.Sunken)
         return vline
 
-    def _add_widgets(self, layout, widgets):
-        """ Add each widget in the list to the layout
+    def _add_items(self, layout, items):
+        """ Add each widget or layout in items to the layout
         """
-        for w in widgets:
-            layout.addWidget(w)
-
-    def _add_layouts(self, layout, layouts):
-        """ Add each layouts in the list to the layout
-        """
-        for l in layouts:
-            layout.addLayout(l)
+        for w in items:
+            if isinstance(w, QtWidgets.QWidget):
+                layout.addWidget(w)
+            elif isinstance(w, QtWidgets.QLayout):
+                layout.addLayout(w)
+            else:
+                raise TypeError("Expected QWidget or QLayout to add to interface")
 
     def _create_marker_list(self):
         """ Create the Marker List layout
@@ -126,7 +120,7 @@ class GuiSkeleton(QtWidgets.QWidget):
             "Clear all the selected points and calculated values")
         # self.clearMarkerButton.setShortcut(QtGui.QKeySequence("C"))
 
-        self._add_widgets(markerListLayout, 
+        self._add_items(markerListLayout, 
                           [markerListLabel, self.markerList, self.clearMarkerButton])
         return markerListLayout
 
@@ -201,14 +195,15 @@ class GuiSkeleton(QtWidgets.QWidget):
         self.calcAngleButton.setToolTip("Calculate Opening Angle")
         self.calcAngleButton.setShortcut(QtGui.QKeySequence("B"))
 
-        self._add_widgets(techButtonLayout,
-                          [ resetButtonLabel, self.resetButton, zoomLabel, ])
-        techButtonLayout.addLayout(zoomLayout)
-        self._add_widgets(techButtonLayout,
-                          [ calcLabel,
-                            self.calcMomentumButton, 
-                            self.calcDensityButton, 
-                            self.calcAngleButton,
+        self._add_items(techButtonLayout,
+                          [resetButtonLabel, 
+                           self.resetButton, 
+                           zoomLabel,
+                           zoomLayout,
+                           calcLabel,
+                           self.calcMomentumButton, 
+                           self.calcDensityButton, 
+                           self.calcAngleButton,
                            ])
         # add stretch to segment to keep widgets together
         techButtonLayout.addStretch(0)
@@ -306,15 +301,13 @@ class GuiSkeleton(QtWidgets.QWidget):
         # Add all the widgets and layout
         saveLayout.addWidget(self.saveSessionButton)
         saveLayout.addWidget(self.loadSessionButton)
-        userSelectionLayout.addWidget(openSaveLabel)
-        userSelectionLayout.addWidget(self.openImageButton)
-        userSelectionLayout.addLayout(saveLayout)
-        self._add_widgets(userSelectionLayout,
-                          [ self.screenshotButton, 
-                            modeLabel, 
-                            self.placeMarkerButton, 
-                            self.drawRefButton, ])
-        userSelectionLayout.addLayout(dlFormLayout)
+        self._add_items(userSelectionLayout,
+                        [openSaveLabel, self.openImageButton, saveLayout,
+                         self.screenshotButton, 
+                         modeLabel, 
+                         self.placeMarkerButton, 
+                         self.drawRefButton, 
+                         dlFormLayout, ])
         # add stretch to segment to keep widgets together
         userSelectionLayout.addStretch(0)
         return userSelectionLayout
