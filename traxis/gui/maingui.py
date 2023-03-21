@@ -54,6 +54,7 @@ class MainWidget(skeleton.GuiSkeleton):
         self.screenshotButton.clicked.connect(self.saveScreenshot)
         self.zoomInButton.clicked.connect(self.zoomIn)
         self.zoomOutButton.clicked.connect(self.zoomOut)
+        self.clearMarkerButton.clicked.connect(self.clearMarkers)
         self.resetButton.clicked.connect(self.reset)
         self.calcMomentumButton.clicked.connect(self.calcTrackMomentum)
         self.calcDensityButton.clicked.connect(self.calcOptDensity)
@@ -704,6 +705,18 @@ class MainWidget(skeleton.GuiSkeleton):
                 scaleFactor = widthRatio
 
             self.scaleImage(scaleFactor)
+
+    def clearMarkers(self):
+        """ Clear the markers from the marker list, leaving everything else
+        """
+
+        # remove all points and arcs from the graphics scene
+        self.markerList.empty()
+        self.momentumArc.reset()
+        if self.tangentLine:
+            self.tangentLine.scene().removeItem(self.tangentLine)
+            self.tangentLine = None
+
 
     ##############################
     # Helper Methods
